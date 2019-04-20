@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Azure_Ocean
+namespace AzureOcean
 {
     /// <summary>
     /// The main class.
@@ -13,7 +13,7 @@ namespace Azure_Ocean
         [STAThread]
         static void Main()
         {
-            using (var game = new Game1())
+            using (var game = new AOGame())
                 game.Run();
         }
     }

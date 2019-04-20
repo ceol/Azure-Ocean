@@ -2,19 +2,29 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-namespace Azure_Ocean
+namespace AzureOcean
 {
     /// <summary>
     /// This is the main type for your game.
     /// </summary>
-    public class Game1 : Game
+    public class AOGame : Game
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        
-        public Game1()
+
+        private Texture2D grassTileSprite;
+        private Texture2D oceanTileSprite;
+
+        public Stage world;
+
+        public AOGame()
         {
             graphics = new GraphicsDeviceManager(this);
+
+            graphics.PreferredBackBufferWidth = 1600;
+            graphics.PreferredBackBufferHeight = 750;
+            graphics.ApplyChanges();
+
             Content.RootDirectory = "Content";
         }
 
@@ -27,8 +37,16 @@ namespace Azure_Ocean
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+            GenerateWorld();
 
             base.Initialize();
+        }
+
+        protected void GenerateWorld()
+        {
+            Architect architect = new Architect();
+            string seed = System.DateTime.Now.ToString();
+            world = architect.GenerateWorld(60, 60, seed);
         }
 
         /// <summary>
@@ -41,6 +59,8 @@ namespace Azure_Ocean
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
+            grassTileSprite = Content.Load<Texture2D>("Images/grass");
+            oceanTileSprite = Content.Load<Texture2D>("Images/ocean");
         }
 
         /// <summary>
@@ -63,6 +83,8 @@ namespace Azure_Ocean
                 Exit();
 
             // TODO: Add your update logic here
+            if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+                GenerateWorld();
 
             base.Update(gameTime);
         }
@@ -76,8 +98,39 @@ namespace Azure_Ocean
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
+            spriteBatch.Begin();
+
+            DrawStage(spriteBatch, world);
+
+            spriteBatch.End();
 
             base.Draw(gameTime);
+        }
+
+        protected void DrawStage(SpriteBatch spriteBatch, Stage stage)
+        {
+            int tileWidthPx = 8;
+            int tileHeightPx = 8;
+
+            Tile tile;
+            Texture2D tileTexture;
+
+            for (int x = 0; x < world.width; x++)
+            {
+                // The Y axis is flipped when drawing sprites.
+                for (int y = stage.height - 1; y >= 0; y--)
+                {
+                    tile = stage.tiles[x, y];
+                    if (tile is WaterTile)
+                        tileTexture = oceanTileSprite;
+                    else if (tile is GrassTile)
+                        tileTexture = grassTileSprite;
+                    else
+                        tileTexture = grassTileSprite;
+
+                    spriteBatch.Draw(tileTexture, new Rectangle(x * tileWidthPx, y * tileHeightPx, tileWidthPx, tileHeightPx), Color.White);
+                }
+            }
         }
     }
 }
