@@ -7,7 +7,7 @@ namespace AzureOcean
     /// <summary>
     /// This is the main type for your game.
     /// </summary>
-    public class AOGame : Game
+    public class GameUI : Microsoft.Xna.Framework.Game
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
@@ -15,9 +15,9 @@ namespace AzureOcean
         private Texture2D grassTileSprite;
         private Texture2D oceanTileSprite;
 
-        public Stage world;
+        public AzureOcean.Game game;
 
-        public AOGame()
+        public GameUI()
         {
             graphics = new GraphicsDeviceManager(this);
 
@@ -26,6 +26,8 @@ namespace AzureOcean
             graphics.ApplyChanges();
 
             Content.RootDirectory = "Content";
+
+            game = new AzureOcean.Game();
         }
 
         /// <summary>
@@ -37,16 +39,9 @@ namespace AzureOcean
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            GenerateWorld();
+            game.GenerateWorld();
 
             base.Initialize();
-        }
-
-        protected void GenerateWorld()
-        {
-            Architect architect = new Architect();
-            string seed = System.DateTime.Now.ToString();
-            world = architect.GenerateWorld(60, 60, seed);
         }
 
         /// <summary>
@@ -84,7 +79,7 @@ namespace AzureOcean
 
             // TODO: Add your update logic here
             if (Mouse.GetState().LeftButton == ButtonState.Pressed)
-                GenerateWorld();
+                game.GenerateNewWorld();
 
             base.Update(gameTime);
         }
@@ -100,7 +95,7 @@ namespace AzureOcean
             // TODO: Add your drawing code here
             spriteBatch.Begin();
 
-            DrawStage(spriteBatch, world);
+            DrawStage(spriteBatch, game.world);
 
             spriteBatch.End();
 
@@ -115,7 +110,7 @@ namespace AzureOcean
             Tile tile;
             Texture2D tileTexture;
 
-            for (int x = 0; x < world.width; x++)
+            for (int x = 0; x < stage.width; x++)
             {
                 // The Y axis is flipped when drawing sprites.
                 for (int y = stage.height - 1; y >= 0; y--)

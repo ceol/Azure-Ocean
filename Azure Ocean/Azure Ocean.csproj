@@ -42,11 +42,12 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Source\AOGame.cs" />
+    <Compile Include="GameUI.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Source\Components\Component.cs" />
     <Compile Include="Source\Entities\Entity.cs" />
+    <Compile Include="Source\Game.cs" />
     <Compile Include="Source\Stage.cs" />
     <Compile Include="Source\Systems\GameSystem.cs" />
   </ItemGroup>

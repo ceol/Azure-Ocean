@@ -68,7 +68,7 @@ namespace AzureOcean
             }
 
             // Smooth randomly generated stage with cellular automata rules
-            int numGenerations = 5;
+            int numGenerations = 7;
             for (int generation = 0; generation < numGenerations; generation++)
             {
                 for (int x = 0; x < width; x++)
@@ -76,9 +76,12 @@ namespace AzureOcean
                     for (int y = 0; y < height; y++)
                     {
                         int numWaters = CountSurroundingWaters(x, y, 1);
-                        if (numWaters > 4)
+                        int numWaters2Step = CountSurroundingWaters(x, y, 2);
+
+                        // The OR check tries to ensure large open areas are split up by water
+                        if (numWaters > 4 || (generation < 4 && numWaters2Step < 2))
                             map[x, y] = waterTile;
-                        else if (numWaters < 4)
+                        else if (numWaters <= 4)
                             map[x, y] = grassTile;
                     }
                 }

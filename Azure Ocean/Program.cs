@@ -13,7 +13,7 @@ namespace AzureOcean
         [STAThread]
         static void Main()
         {
-            using (var game = new AOGame())
+            using (var game = new GameUI())
                 game.Run();
         }
     }
