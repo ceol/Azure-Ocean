@@ -32,11 +32,6 @@ namespace AzureOcean.Components
         {
             entity.PropagateEvent(gameEvent);
         }
-
-        public string GetName()
-        {
-            return GetType().ToString().Replace("AzureOcean.Components.", "");
-        }
     }
 
     // Exists on the game's stage
@@ -48,7 +43,11 @@ namespace AzureOcean.Components
     public class Health : Component
     {
         int health;
-        int baseHealth;
+
+        public Health(int startingHealth)
+        {
+            health = startingHealth;
+        }
 
         public bool IsAlive
         {
@@ -69,39 +68,28 @@ namespace AzureOcean.Components
         public void TakeDamage(int amount)
         {
             health -= amount;
+            if (health < 0) health = 0;
         }
     }
 
-    // Can act each turn
-    public class Actor : Component
+    public class Energy : Component
     {
         int energy;
-        int energyPerTurn;
+        int energyPerTurn = 1;
 
-        public Actor()
+        public Energy()
         {
             energy = 0;
-            energyPerTurn = 1;
         }
 
-        public Actor(int startingEnergy)
+        public Energy(int startingEnergy)
         {
             energy = startingEnergy;
         }
 
-        public bool CanAct
+        public void GrantEnergy(int energy)
         {
-            get { return energy > 0; }
-        }
-
-        public void StartTurn()
-        {
-            energy += energyPerTurn;
-        }
-
-        public void Act()
-        {
-
+            this.energy += energy;
         }
     }
 

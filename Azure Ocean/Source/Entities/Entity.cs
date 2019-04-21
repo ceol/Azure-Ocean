@@ -1,8 +1,10 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 using AzureOcean.Components;
 
 namespace AzureOcean
@@ -12,7 +14,7 @@ namespace AzureOcean
         public string name;
 
         List<Component> components = new List<Component>();
-        List<string> componentNames = new List<string>();
+        List<Type> componentTypes = new List<Type>();
 
         public Entity()
         {
@@ -38,14 +40,14 @@ namespace AzureOcean
         public void AttachComponent(Component component)
         {
             component.entity = this;
-            componentNames.Add(component.GetName());
+            componentTypes.Add(component.GetType());
             components.Add(component);
         }
 
         public void RemoveComponent(Component component)
         {
             component.entity = null;
-            componentNames.Remove(component.GetName());
+            componentTypes.Remove(component.GetType());
             components.Remove(component);
         }
 
@@ -57,11 +59,11 @@ namespace AzureOcean
             }
         }
 
-        public bool HasComponents(string[] componentTypes)
+        public bool HasComponents(Type[] types)
         {
-            foreach (string name in componentTypes)
+            foreach (Type type in types)
             {
-                if (!componentNames.Contains(name))
+                if (!componentTypes.Contains(type))
                     return false;
             }
 
@@ -76,8 +78,8 @@ namespace AzureOcean
             Entity entity = new Entity("Player");
             entity.AttachComponent(new Player());
             entity.AttachComponent(new Position());
-            entity.AttachComponent(new Actor());
-            entity.AttachComponent(new Health());
+            entity.AttachComponent(new Energy());
+            entity.AttachComponent(new Health(30));
             return entity;
         }
 
@@ -86,8 +88,7 @@ namespace AzureOcean
             Entity entity = new Entity("Goblin");
             entity.AttachComponent(new Hostile());
             entity.AttachComponent(new Position());
-            entity.AttachComponent(new Actor());
-            entity.AttachComponent(new Health());
+            entity.AttachComponent(new Health(5));
             return entity;
         }
     }

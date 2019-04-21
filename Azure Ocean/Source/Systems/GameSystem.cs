@@ -4,12 +4,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Debug = System.Diagnostics.Debug;
+using AzureOcean.Components;
 
 namespace AzureOcean
 {
-    public class GameSystem
+    public abstract class GameSystem
     {
         public Game game;
+
+        public GameSystem(Game game)
+        {
+            this.game = game;
+        }
 
         public virtual void Run()
         {
@@ -17,9 +23,24 @@ namespace AzureOcean
         }
     }
 
+    // Handles existence on the board
+    public class PhysicsSystem : GameSystem
+    {
+        Type[] Components = { typeof(Position) };
+
+        public PhysicsSystem(Game game) : base(game) { }
+
+        public override void Run()
+        {
+            List<Entity> entities = game.GetEntities(Components);
+        }
+    }
+
     public class ActorSystem : GameSystem
     {
-        string[] Components = { "Actor" };
+        Type[] Components = { typeof(Energy) };
+
+        public ActorSystem(Game game) : base(game) { }
 
         public override void Run()
         {
@@ -33,6 +54,8 @@ namespace AzureOcean
 
     public class RenderSystem : GameSystem
     {
+        public RenderSystem(Game game) : base(game) { }
+
         public override void Run()
         {
             

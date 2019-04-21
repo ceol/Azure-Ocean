@@ -16,8 +16,8 @@ namespace AzureOcean
         public Stage world;
         public Stage currentStage;
 
-        public List<Entity> entities;
-        public List<GameSystem> systems;
+        public List<Entity> entities = new List<Entity>();
+        public List<GameSystem> systems = new List<GameSystem>();
 
         public Game()
         {
@@ -31,11 +31,13 @@ namespace AzureOcean
 
         public void Initialize()
         {
-            systems = new List<GameSystem>();
-            systems.Add(new ActorSystem() { game = this });
+            // Load systems
+            // The order here matters, as this is the order they
+            // will run their operations.
+            systems.Add(new ActorSystem(this));
 
-            entities = new List<Entity>();
             entities.Add(EntityFactory.CreatePlayer());
+            entities.Add(EntityFactory.CreateGoblin());
 
             architect = new Architect();
             GenerateWorld();
@@ -57,7 +59,7 @@ namespace AzureOcean
             GenerateWorld();
         }
 
-        public List<Entity> GetEntities(string[] componentTypes)
+        public List<Entity> GetEntities(Type[] componentTypes)
         {
             List<Entity> filteredEntities = new List<Entity>();
             foreach (Entity entity in entities)
