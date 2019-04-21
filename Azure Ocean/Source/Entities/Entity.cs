@@ -26,12 +26,12 @@ namespace AzureOcean
             this.name = name;
         }
 
-        public Component GetComponent<T>()
+        public T GetComponent<T>() where T : Component
         {
-            foreach (Component component in components)
+            for (int i = 0; i < components.Count; i++)
             {
-                if (component is T)
-                    return component;
+                if (components[i].GetType() == typeof(T))
+                    return components[i] as T;
             }
 
             return null;
@@ -80,7 +80,7 @@ namespace AzureOcean
                     new Player(),
                     new Position(),
                     new Health(30),
-                    new Energy(),
+                    new Actor(),
                     new Render(),
                 }
             );
@@ -93,7 +93,7 @@ namespace AzureOcean
                     new Hostile(),
                     new Position(),
                     new Health(30),
-                    new Energy(),
+                    new Actor(),
                     new Render(),
                 }
             );

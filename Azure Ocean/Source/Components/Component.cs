@@ -72,17 +72,17 @@ namespace AzureOcean.Components
         }
     }
 
-    public class Energy : Component
+    public class Actor : Component
     {
         int energy;
         int energyPerTurn = 1;
 
-        public Energy()
+        public Actor()
         {
             energy = 0;
         }
 
-        public Energy(int startingEnergy)
+        public Actor(int startingEnergy)
         {
             energy = startingEnergy;
         }
@@ -98,12 +98,12 @@ namespace AzureOcean.Components
         }
     }
 
-    public class Player : Component
+    public class Player : Actor
     {
 
     }
 
-    public class Hostile : Component
+    public class Hostile : Actor
     {
 
     }

@@ -34,6 +34,8 @@ namespace AzureOcean
         public override void Run()
         {
             entities = game.GetEntities(Components);
+            Player playerComponent = entities.First().GetComponent<Player>();
+
         }
     }
 
@@ -52,7 +54,7 @@ namespace AzureOcean
 
     public class ActorSystem : GameSystem
     {
-        Type[] Components = { typeof(Energy) };
+        Type[] Components = { typeof(Actor) };
 
         public ActorSystem(Game game) : base(game) { }
 
@@ -61,7 +63,7 @@ namespace AzureOcean
             entities = game.GetEntities(Components);
             foreach (Entity entity in entities)
             {
-                
+                Debug.WriteLine(entity.name);
             }
         }
     }
