@@ -7,7 +7,7 @@ namespace AzureOcean
     /// <summary>
     /// This is the main type for your game.
     /// </summary>
-    public class GameUI : Microsoft.Xna.Framework.Game
+    public class AOGame : Microsoft.Xna.Framework.Game
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
@@ -17,7 +17,7 @@ namespace AzureOcean
 
         public AzureOcean.Game game;
 
-        public GameUI()
+        public AOGame()
         {
             graphics = new GraphicsDeviceManager(this);
 
@@ -39,7 +39,7 @@ namespace AzureOcean
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            game.GenerateWorld();
+            game.Initialize();
 
             base.Initialize();
         }
@@ -81,6 +81,8 @@ namespace AzureOcean
             if (Mouse.GetState().LeftButton == ButtonState.Pressed)
                 game.GenerateNewWorld();
 
+            game.Update();
+
             base.Update(gameTime);
         }
 
@@ -96,6 +98,8 @@ namespace AzureOcean
             spriteBatch.Begin();
 
             DrawStage(spriteBatch, game.world);
+
+            // Run RenderSystem?
 
             spriteBatch.End();
 
