@@ -2,6 +2,8 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
+using System;
+
 namespace AzureOcean
 {
     /// <summary>
@@ -12,8 +14,12 @@ namespace AzureOcean
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
+        int tileWidthPx = 8;
+        int tileHeightPx = 8;
+
         private Texture2D grassTileSprite;
         private Texture2D oceanTileSprite;
+        private Texture2D elfSprite;
 
         public AzureOcean.Game game;
 
@@ -56,6 +62,7 @@ namespace AzureOcean
             // TODO: use this.Content to load your game content here
             grassTileSprite = Content.Load<Texture2D>("Images/grass");
             oceanTileSprite = Content.Load<Texture2D>("Images/ocean");
+            elfSprite = Content.Load<Texture2D>("Images/elf");
         }
 
         /// <summary>
@@ -79,7 +86,9 @@ namespace AzureOcean
 
             // TODO: Add your update logic here
             if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+            {
                 game.GenerateNewWorld();
+            }
 
             game.Update();
 
@@ -100,6 +109,7 @@ namespace AzureOcean
             DrawStage(spriteBatch, game.world);
 
             // Run RenderSystem?
+            DrawEntities(spriteBatch);
 
             spriteBatch.End();
 
@@ -108,9 +118,6 @@ namespace AzureOcean
 
         protected void DrawStage(SpriteBatch spriteBatch, Stage stage)
         {
-            int tileWidthPx = 8;
-            int tileHeightPx = 8;
-
             Tile tile;
             Texture2D tileTexture;
 
@@ -129,6 +136,17 @@ namespace AzureOcean
 
                     spriteBatch.Draw(tileTexture, new Rectangle(x * tileWidthPx, y * tileHeightPx, tileWidthPx, tileHeightPx), Color.White);
                 }
+            }
+        }
+
+        protected void DrawEntities(SpriteBatch spriteBatch)
+        {
+            Type[] filter = new Type[] { typeof(Components.Render), typeof(Components.Transform) };
+            foreach (Entity entity in game.GetEntities(filter))
+            {
+                Components.Transform transform = entity.GetComponent<Components.Transform>();
+                Components.Render render = entity.GetComponent<Components.Render>();
+                spriteBatch.Draw(elfSprite, new Rectangle(transform.position.X * tileWidthPx, transform.position.Y * tileHeightPx, tileWidthPx, tileHeightPx), Color.White);
             }
         }
     }

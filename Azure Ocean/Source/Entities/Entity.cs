@@ -78,10 +78,10 @@ namespace AzureOcean
             return CreateEntity("Player",
                 new Component[] {
                     new Player(),
-                    new Position(),
+                    new Transform(),
                     new Health(30),
                     new Actor(),
-                    new Render(),
+                    new Render("Images/elf"),
                 }
             );
         }
@@ -91,10 +91,10 @@ namespace AzureOcean
             return CreateEntity("Goblin",
                 new Component[] {
                     new Hostile(),
-                    new Position(),
+                    new Transform(),
                     new Health(30),
                     new Actor(),
-                    new Render(),
+                    new Render("Images/elf"),
                 }
             );
         }

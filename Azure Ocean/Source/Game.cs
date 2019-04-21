@@ -47,7 +47,7 @@ namespace AzureOcean
             entities.Add(EntityFactory.CreatePlayer());
 
             // Load additional entities
-            entities.Add(EntityFactory.CreateGoblin());
+            //entities.Add(EntityFactory.CreateGoblin());
         }
 
         public string GetNewSeed()

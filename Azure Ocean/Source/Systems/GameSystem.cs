@@ -1,8 +1,11 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 using Debug = System.Diagnostics.Debug;
 using AzureOcean.Components;
 
@@ -34,15 +37,24 @@ namespace AzureOcean
         public override void Run()
         {
             entities = game.GetEntities(Components);
-            Player playerComponent = entities.First().GetComponent<Player>();
+            Entity player = entities.First();
+            Transform transform = player.GetComponent<Transform>();
 
+            if (Keyboard.GetState().IsKeyDown(Keys.Up))
+                transform.position += new Point(0, -1);
+            if (Keyboard.GetState().IsKeyDown(Keys.Down))
+                transform.position += new Point(0, 1);
+            if (Keyboard.GetState().IsKeyDown(Keys.Left))
+                transform.position += new Point(-1, 0);
+            if (Keyboard.GetState().IsKeyDown(Keys.Right))
+                transform.position += new Point(1, 0);
         }
     }
 
     // Handles existence on the board
     public class PhysicsSystem : GameSystem
     {
-        Type[] Components = { typeof(Position) };
+        Type[] Components = { typeof(Transform) };
 
         public PhysicsSystem(Game game) : base(game) { }
 
@@ -56,15 +68,13 @@ namespace AzureOcean
     {
         Type[] Components = { typeof(Actor) };
 
+        LinkedList<Entity> actors;
+
         public ActorSystem(Game game) : base(game) { }
 
         public override void Run()
         {
-            entities = game.GetEntities(Components);
-            foreach (Entity entity in entities)
-            {
-                Debug.WriteLine(entity.name);
-            }
+            
         }
     }
 

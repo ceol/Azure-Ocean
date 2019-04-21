@@ -35,9 +35,9 @@ namespace AzureOcean.Components
     }
 
     // Exists on the game's stage
-    public class Position : Component
+    public class Transform : Component
     {
-        Point position;
+        public Point position;
     }
 
     public class Health : Component
@@ -77,6 +77,8 @@ namespace AzureOcean.Components
         int energy;
         int energyPerTurn = 1;
 
+        string nextAction;
+
         public Actor()
         {
             energy = 0;
@@ -96,20 +98,35 @@ namespace AzureOcean.Components
         {
             energy -= energyPerTurn;
         }
+
+        public void SetAction(string action)
+        {
+            nextAction = action;
+        }
+
+        public string GetAction()
+        {
+            return nextAction;
+        }
     }
 
-    public class Player : Actor
+    public class Player : Component
     {
 
     }
 
-    public class Hostile : Actor
+    public class Hostile : Component
     {
 
     }
 
     public class Render : Component
     {
+        public readonly string content;
 
+        public Render(string content)
+        {
+            this.content = content;
+        }
     }
 }
