@@ -12,6 +12,8 @@ namespace AzureOcean
     {
         public Game game;
 
+        public List<Entity> entities;
+
         public GameSystem(Game game)
         {
             this.game = game;
@@ -20,6 +22,18 @@ namespace AzureOcean
         public virtual void Run()
         {
 
+        }
+    }
+
+    public class PlayerInputSystem : GameSystem
+    {
+        Type[] Components = { typeof(Player) };
+
+        public PlayerInputSystem(Game game) : base(game) { }
+
+        public override void Run()
+        {
+            entities = game.GetEntities(Components);
         }
     }
 
@@ -32,7 +46,7 @@ namespace AzureOcean
 
         public override void Run()
         {
-            List<Entity> entities = game.GetEntities(Components);
+            entities = game.GetEntities(Components);
         }
     }
 
@@ -44,7 +58,7 @@ namespace AzureOcean
 
         public override void Run()
         {
-            List<Entity> entities = game.GetEntities(Components);
+            entities = game.GetEntities(Components);
             foreach (Entity entity in entities)
             {
                 
@@ -52,13 +66,16 @@ namespace AzureOcean
         }
     }
 
+    // Actually rendered to the screen instead of hidden
     public class RenderSystem : GameSystem
     {
+        Type[] Components = { typeof(Render) };
+
         public RenderSystem(Game game) : base(game) { }
 
         public override void Run()
         {
-            
+            entities = game.GetEntities(Components);
         }
     }
 }

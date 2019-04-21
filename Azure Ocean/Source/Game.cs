@@ -34,18 +34,25 @@ namespace AzureOcean
             // Load systems
             // The order here matters, as this is the order they
             // will run their operations.
+            systems.Add(new PlayerInputSystem(this));
             systems.Add(new ActorSystem(this));
+            systems.Add(new PhysicsSystem(this));
+            systems.Add(new RenderSystem(this));
 
-            entities.Add(EntityFactory.CreatePlayer());
-            entities.Add(EntityFactory.CreateGoblin());
-
+            // Load the stage
             architect = new Architect();
             GenerateWorld();
+
+            // Load the player
+            entities.Add(EntityFactory.CreatePlayer());
+
+            // Load additional entities
+            entities.Add(EntityFactory.CreateGoblin());
         }
 
         public string GetNewSeed()
         {
-            return DateTime.Now.ToString();
+            return DateTime.Now.ToString("yyyyMMddTHH:mm:ss.ffff");
         }
 
         public void GenerateWorld()

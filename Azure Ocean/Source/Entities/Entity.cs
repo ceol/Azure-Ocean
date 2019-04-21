@@ -75,20 +75,37 @@ namespace AzureOcean
     {
         public static Entity CreatePlayer()
         {
-            Entity entity = new Entity("Player");
-            entity.AttachComponent(new Player());
-            entity.AttachComponent(new Position());
-            entity.AttachComponent(new Energy());
-            entity.AttachComponent(new Health(30));
-            return entity;
+            return CreateEntity("Player",
+                new Component[] {
+                    new Player(),
+                    new Position(),
+                    new Health(30),
+                    new Energy(),
+                    new Render(),
+                }
+            );
         }
 
         public static Entity CreateGoblin()
         {
-            Entity entity = new Entity("Goblin");
-            entity.AttachComponent(new Hostile());
-            entity.AttachComponent(new Position());
-            entity.AttachComponent(new Health(5));
+            return CreateEntity("Goblin",
+                new Component[] {
+                    new Hostile(),
+                    new Position(),
+                    new Health(30),
+                    new Energy(),
+                    new Render(),
+                }
+            );
+        }
+
+        public static Entity CreateEntity(string name, Component[] components)
+        {
+            Entity entity = new Entity(name);
+            foreach (Component component in components)
+            {
+                entity.AttachComponent(component);
+            }
             return entity;
         }
     }

@@ -91,6 +91,11 @@ namespace AzureOcean.Components
         {
             this.energy += energy;
         }
+
+        public void SpendEnergy()
+        {
+            energy -= energyPerTurn;
+        }
     }
 
     public class Player : Component
@@ -99,6 +104,11 @@ namespace AzureOcean.Components
     }
 
     public class Hostile : Component
+    {
+
+    }
+
+    public class Render : Component
     {
 
     }
