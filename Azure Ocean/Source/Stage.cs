@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +10,7 @@ namespace AzureOcean
 {
     public class Tile
     {
-
+        public virtual bool IsTraversable { get; } = true;
     }
 
     public class GrassTile : Tile
@@ -19,7 +20,17 @@ namespace AzureOcean
 
     public class WaterTile : Tile
     {
+        public override bool IsTraversable { get; } = false;
+    }
 
+    public class DesertTile : Tile
+    {
+
+    }
+
+    public class StoneTile : Tile
+    {
+        public override bool IsTraversable { get; } = false;
     }
 
     public class Stage
@@ -29,11 +40,38 @@ namespace AzureOcean
 
         public Tile[,] tiles;
 
+        Dictionary<Entity, Point> actorPositions = new Dictionary<Entity, Point>();
+
         public Stage(int width, int height)
         {
             this.width = width;
             this.height = height;
             tiles = new Tile[width, height];
+        }
+
+        public bool IsTraversable(int x, int y)
+        {
+            return IsValid(x, y) && tiles[x, y].IsTraversable;
+        }
+
+        public bool IsValid(int x, int y)
+        {
+            return x >= 0 && x < tiles.GetUpperBound(0) && y >= 0 && y < tiles.GetUpperBound(1);
+        }
+
+        public void MoveTo(Entity actor, Point position)
+        {
+            actorPositions[actor] = position;
+        }
+
+        public Entity GetOccupant(Point position)
+        {
+            foreach (KeyValuePair<Entity, Point> pair in actorPositions)
+            {
+                if (pair.Value == position)
+                    return pair.Key;
+            }
+            return null;
         }
     }
 

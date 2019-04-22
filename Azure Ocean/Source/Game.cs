@@ -14,7 +14,10 @@ namespace AzureOcean
         public Architect architect;
 
         public Stage world;
-        public Stage currentStage;
+        public Stage CurrentStage
+        {
+            get { return world; }
+        }
 
         public List<Entity> entities = new List<Entity>();
         public List<GameSystem> systems = new List<GameSystem>();
@@ -44,7 +47,7 @@ namespace AzureOcean
             GenerateWorld();
 
             // Load the player
-            entities.Add(EntityFactory.CreatePlayer());
+            entities.Add(EntityFactory.CreatePlayer(this));
 
             // Load additional entities
             //entities.Add(EntityFactory.CreateGoblin());

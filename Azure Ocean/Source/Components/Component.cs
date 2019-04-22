@@ -74,10 +74,12 @@ namespace AzureOcean.Components
 
     public class Actor : Component
     {
+        public Game game;
+
         int energy;
         int energyPerTurn = 1;
 
-        string nextAction;
+        Action nextAction;
 
         public Actor()
         {
@@ -87,6 +89,11 @@ namespace AzureOcean.Components
         public Actor(int startingEnergy)
         {
             energy = startingEnergy;
+        }
+
+        public Actor(Game game)
+        {
+            this.game = game;
         }
 
         public void GrantEnergy(int energy)
@@ -99,14 +106,16 @@ namespace AzureOcean.Components
             energy -= energyPerTurn;
         }
 
-        public void SetAction(string action)
+        public void SetAction(Action action)
         {
             nextAction = action;
         }
 
-        public string GetAction()
+        public Action GetAction()
         {
-            return nextAction;
+            Action action = nextAction;
+            nextAction = null;
+            return action;
         }
     }
 

@@ -73,27 +73,27 @@ namespace AzureOcean
 
     public static class EntityFactory
     {
-        public static Entity CreatePlayer()
+        public static Entity CreatePlayer(Game game)
         {
             return CreateEntity("Player",
                 new Component[] {
                     new Player(),
                     new Transform(),
                     new Health(30),
-                    new Actor(),
+                    new Actor(game),
                     new Render("Images/elf"),
                 }
             );
         }
 
-        public static Entity CreateGoblin()
+        public static Entity CreateGoblin(Game game)
         {
             return CreateEntity("Goblin",
                 new Component[] {
                     new Hostile(),
                     new Transform(),
                     new Health(30),
-                    new Actor(),
+                    new Actor(game),
                     new Render("Images/elf"),
                 }
             );
