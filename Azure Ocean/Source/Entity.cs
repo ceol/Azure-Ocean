@@ -79,7 +79,7 @@ namespace AzureOcean
 
     public static class EntityFactory
     {
-        public static Entity CreatePlayer(GameEngine game)
+        public static Entity CreatePlayer(GameState game)
         {
             return CreateEntity("Player",
                 new Component[] {
@@ -92,7 +92,7 @@ namespace AzureOcean
             );
         }
 
-        public static Entity CreateGoblin(GameEngine game)
+        public static Entity CreateGoblin(GameState game)
         {
             return CreateEntity("Goblin",
                 new Component[] {

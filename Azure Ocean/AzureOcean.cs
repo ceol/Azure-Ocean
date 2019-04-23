@@ -24,7 +24,7 @@ namespace AzureOcean
         private Texture2D oceanTileSprite;
         private Texture2D elfSprite;
 
-        public AzureOcean.GameEngine game;
+        public GameState game;
 
         public AOGame()
         {
@@ -36,7 +36,7 @@ namespace AzureOcean
 
             Content.RootDirectory = "Content";
 
-            game = new AzureOcean.GameEngine();
+            game = new GameState();
         }
 
         /// <summary>

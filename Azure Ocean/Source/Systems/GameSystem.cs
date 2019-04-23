@@ -15,11 +15,11 @@ namespace AzureOcean
 {
     public abstract class GameSystem
     {
-        public GameEngine game;
+        public GameState game;
 
         public List<Entity> entities;
 
-        public void Bind(GameEngine game)
+        public void Bind(GameState game)
         {
             this.game = game;
         }
@@ -32,13 +32,17 @@ namespace AzureOcean
 
     public class PlayerInputSystem : GameSystem
     {
-        Type[] Components = { typeof(Player) };
+        struct Components
+        {
+            Actor actor;
+            Player player;
+        }
 
         KeyboardState previousState;
 
         public override void Run()
         {
-            entities = game.GetEntities(Components);
+            entities = game.GetEntities<Components>();
             Entity player = entities.First();
             Actor actor = player.GetComponent<Actor>();
             if (actor == null)
@@ -64,35 +68,82 @@ namespace AzureOcean
         }
     }
 
+    // Implements logic for hostile actors
+    // This sets their next action based on any available targets
     public class HostileSystem : GameSystem
     {
-        Type[] Components = { typeof(Hostile), typeof(Actor) };
+        struct Components
+        {
+            Actor actor;
+            Hostile hostile;
+        }
+
+        Dictionary<Actor, Entity> targets = new Dictionary<Actor, Entity>();
 
         public override void Run()
         {
-            entities = game.GetEntities(Components);
+            entities = game.GetEntities<Components>();
             foreach (Entity entity in entities)
             {
                 Actor actor = entity.GetComponent<Actor>();
-                actor.SetAction(new Walk(actor, Vector.left));
+                actor.SetAction(new Wait(actor));
+
+                // See if it has a target or check for new target
+                Entity target = GetTarget(actor);
+                if (target == null)
+                    continue;
+                
+                // Pathfind to target
+
+
+                // Move to next available tile in path
             }
+        }
+
+        public Entity GetTarget(Actor actor)
+        {
+            Entity target = null;
+
+            if (targets.ContainsKey(actor))
+            {
+                target = targets[actor];
+                if (target == null)
+                    targets.Remove(actor); // is this necessary?
+                return target;
+            }
+
+            return target;
+        }
+    }
+
+    public class ProjectileSystem : GameSystem
+    {
+        public override void Run()
+        {
+            
         }
     }
 
     // Handles existence on the board
     public class PhysicsSystem : GameSystem
     {
-        Type[] Components = { typeof(Transform) };
+        struct Components
+        {
+            Transform transform;
+        }
 
         public override void Run()
         {
-            entities = game.GetEntities(Components);
+            entities = game.GetEntities<Components>();
         }
     }
 
     public class TurnSystem : GameSystem
     {
-        Type[] Components = { typeof(Actor) };
+        struct Components
+        {
+            Actor actor;
+        }
 
         LinkedList<Actor> turnOrder = new LinkedList<Actor>();
 
@@ -100,7 +151,7 @@ namespace AzureOcean
         {
             if (turnOrder.Count == 0)
             {
-                foreach (Entity entity in game.GetEntities(Components))
+                foreach (Entity entity in game.GetEntities<Components>())
                 {
                     turnOrder.AddLast(entity.GetComponent<Actor>());
                 }
@@ -144,11 +195,15 @@ namespace AzureOcean
     // Actually rendered to the screen instead of hidden
     public class RenderSystem : GameSystem
     {
-        Type[] Components = { typeof(Render) };
+        struct Components
+        {
+            Transform transform;
+            Render render;
+        }
 
         public override void Run()
         {
-            entities = game.GetEntities(Components);
+            entities = game.GetEntities<Components>();
         }
     }
 }

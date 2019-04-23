@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,7 +8,7 @@ using Debug = System.Diagnostics.Debug;
 
 namespace AzureOcean
 {
-    public class GameEngine
+    public class GameState
     {
         public string seed;
 
@@ -22,12 +23,12 @@ namespace AzureOcean
         public List<Entity> entities = new List<Entity>();
         public List<GameSystem> systems = new List<GameSystem>();
 
-        public GameEngine()
+        public GameState()
         {
             seed = GetNewSeed();
         }
 
-        public GameEngine(string seed)
+        public GameState(string seed)
         {
             this.seed = seed;
         }
@@ -86,6 +87,28 @@ namespace AzureOcean
             }
 
             return filteredEntities;
+        }
+
+        public List<Entity> GetEntities<T>() where T : struct
+        {
+            Type[] types = GetTypesFromFields(typeof(T).GetFields());
+            List<Entity> filteredEntities = new List<Entity>();
+            foreach (Entity entity in entities)
+            {
+                if (entity.HasComponents(types))
+                    filteredEntities.Add(entity);
+            }
+            return filteredEntities;
+        }
+
+        public Type[] GetTypesFromFields(FieldInfo[] fields)
+        {
+            Type[] types = new Type[fields.Length];
+            for (int i = 0; i < types.Length; i++)
+            {
+                types[i] = fields[i].DeclaringType;
+            }
+            return types;
         }
 
         public void Update()

@@ -92,14 +92,14 @@ namespace AzureOcean.Components
 
     public class Actor : Component
     {
-        public GameEngine game;
+        public GameState game;
 
         int energy = 0;
         int energyPerTurn = 1;
 
         GameAction nextAction;
 
-        public Actor(GameEngine game)
+        public Actor(GameState game)
         {
             this.game = game;
         }
@@ -154,7 +154,7 @@ namespace AzureOcean.Components
 
     public class Hostile : Component
     {
-
+        public int range = 2;
     }
 
     public class Render : Component
