@@ -10,7 +10,7 @@ namespace AzureOcean
 {
     public class Tile
     {
-        public virtual bool IsTraversable { get; } = true;
+        public bool IsTraversable = true;
     }
 
     public class GrassTile : Tile
@@ -20,7 +20,7 @@ namespace AzureOcean
 
     public class WaterTile : Tile
     {
-        public override bool IsTraversable { get; } = false;
+        public WaterTile() { IsTraversable = false; }
     }
 
     public class DesertTile : Tile
@@ -30,7 +30,7 @@ namespace AzureOcean
 
     public class StoneTile : Tile
     {
-        public override bool IsTraversable { get; } = false;
+        
     }
 
     public class Stage
@@ -40,7 +40,7 @@ namespace AzureOcean
 
         public Tile[,] tiles;
 
-        Dictionary<Entity, Point> actorPositions = new Dictionary<Entity, Point>();
+        Dictionary<Entity, Vector> entityPositions = new Dictionary<Entity, Vector>();
 
         public Stage(int width, int height)
         {
@@ -49,26 +49,26 @@ namespace AzureOcean
             tiles = new Tile[width, height];
         }
 
-        public bool IsTraversable(int x, int y)
+        public bool IsTraversable(Vector coordinate)
         {
-            return IsValid(x, y) && tiles[x, y].IsTraversable;
+            return IsValid(coordinate) && tiles[coordinate.x, coordinate.y].IsTraversable;
         }
 
-        public bool IsValid(int x, int y)
+        public bool IsValid(Vector coordinate)
         {
-            return x >= 0 && x < tiles.GetUpperBound(0) && y >= 0 && y < tiles.GetUpperBound(1);
+            return coordinate.x >= 0 && coordinate.x < tiles.GetUpperBound(0) && coordinate.y >= 0 && coordinate.y < tiles.GetUpperBound(1);
         }
 
-        public void MoveTo(Entity actor, Point position)
+        public void MoveTo(Entity entity, Vector position)
         {
-            actorPositions[actor] = position;
+            entityPositions[entity] = position;
         }
 
-        public Entity GetOccupant(Point position)
+        public Entity GetOccupant(Vector coordinate)
         {
-            foreach (KeyValuePair<Entity, Point> pair in actorPositions)
+            foreach (KeyValuePair<Entity, Vector> pair in entityPositions)
             {
-                if (pair.Value == position)
+                if (pair.Value == coordinate)
                     return pair.Key;
             }
             return null;

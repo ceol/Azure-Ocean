@@ -4,12 +4,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
+using Debug = System.Diagnostics.Debug;
+
+using AzureOcean.Actions;
 
 namespace AzureOcean.Components
 {
     public class Component
     {
         public Entity entity;
+
+        public void Bind(Entity entity)
+        {
+            this.entity = entity;
+        }
 
         public virtual void ReceiveEvent(GameEvent gameEvent)
         {
@@ -37,7 +45,17 @@ namespace AzureOcean.Components
     // Exists on the game's stage
     public class Transform : Component
     {
-        public Point position;
+        public Vector position;
+
+        public Transform()
+        {
+            position = new Vector(0, 0);
+        }
+
+        public Transform(Vector position)
+        {
+            this.position = position;
+        }
     }
 
     public class Health : Component
@@ -74,31 +92,26 @@ namespace AzureOcean.Components
 
     public class Actor : Component
     {
-        public Game game;
+        public GameEngine game;
 
-        int energy;
+        int energy = 0;
         int energyPerTurn = 1;
 
-        Action nextAction;
+        GameAction nextAction;
 
-        public Actor()
-        {
-            energy = 0;
-        }
-
-        public Actor(int startingEnergy)
-        {
-            energy = startingEnergy;
-        }
-
-        public Actor(Game game)
+        public Actor(GameEngine game)
         {
             this.game = game;
         }
-
-        public void GrantEnergy(int energy)
+        
+        public bool CanAct
         {
-            this.energy += energy;
+            get { return energy > 0; }
+        }
+
+        public void GrantEnergy()
+        {
+            energy += energyPerTurn;
         }
 
         public void SpendEnergy()
@@ -106,16 +119,31 @@ namespace AzureOcean.Components
             energy -= energyPerTurn;
         }
 
-        public void SetAction(Action action)
+        public void SetAction(GameAction action)
         {
             nextAction = action;
         }
 
-        public Action GetAction()
+        public GameAction GetAction()
         {
-            Action action = nextAction;
+            GameAction action = nextAction;
             nextAction = null;
             return action;
+        }
+
+        public Vector GetPosition()
+        {
+            Transform transform = entity.GetComponent<Transform>();
+            return transform.position;
+        }
+
+        public void SetPosition(Vector coordinate)
+        {
+            Transform transform = entity.GetComponent<Transform>();
+            if (transform == null)
+                return;
+
+            transform.position = coordinate;
         }
     }
 

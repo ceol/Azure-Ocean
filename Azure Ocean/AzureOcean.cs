@@ -14,6 +14,9 @@ namespace AzureOcean
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
+        int windowWidthPx = 1600;
+        int windowHeightPx = 750;
+
         int tileWidthPx = 8;
         int tileHeightPx = 8;
 
@@ -21,19 +24,19 @@ namespace AzureOcean
         private Texture2D oceanTileSprite;
         private Texture2D elfSprite;
 
-        public AzureOcean.Game game;
+        public AzureOcean.GameEngine game;
 
         public AOGame()
         {
             graphics = new GraphicsDeviceManager(this);
 
-            graphics.PreferredBackBufferWidth = 1600;
-            graphics.PreferredBackBufferHeight = 750;
+            graphics.PreferredBackBufferWidth = windowWidthPx;
+            graphics.PreferredBackBufferHeight = windowHeightPx;
             graphics.ApplyChanges();
 
             Content.RootDirectory = "Content";
 
-            game = new AzureOcean.Game();
+            game = new AzureOcean.GameEngine();
         }
 
         /// <summary>
@@ -134,7 +137,8 @@ namespace AzureOcean
                     else
                         tileTexture = grassTileSprite;
 
-                    spriteBatch.Draw(tileTexture, new Rectangle(x * tileWidthPx, y * tileHeightPx, tileWidthPx, tileHeightPx), Color.White);
+                    int yCoord = (stage.height - y) * tileHeightPx;
+                    spriteBatch.Draw(tileTexture, new Rectangle(x * tileWidthPx, yCoord, tileWidthPx, tileHeightPx), Color.White);
                 }
             }
         }
@@ -146,7 +150,10 @@ namespace AzureOcean
             {
                 Components.Transform transform = entity.GetComponent<Components.Transform>();
                 Components.Render render = entity.GetComponent<Components.Render>();
-                spriteBatch.Draw(elfSprite, new Rectangle(transform.position.X * tileWidthPx, transform.position.Y * tileHeightPx, tileWidthPx, tileHeightPx), Color.White);
+
+                int xCoord = transform.position.x * tileWidthPx;
+                int yCoord = (game.CurrentStage.height - transform.position.y) * tileHeightPx;
+                spriteBatch.Draw(elfSprite, new Rectangle(xCoord, yCoord, tileWidthPx, tileHeightPx), Color.White);
             }
         }
     }

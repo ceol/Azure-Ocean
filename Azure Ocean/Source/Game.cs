@@ -7,7 +7,7 @@ using Debug = System.Diagnostics.Debug;
 
 namespace AzureOcean
 {
-    public class Game
+    public class GameEngine
     {
         public string seed;
 
@@ -22,12 +22,12 @@ namespace AzureOcean
         public List<Entity> entities = new List<Entity>();
         public List<GameSystem> systems = new List<GameSystem>();
 
-        public Game()
+        public GameEngine()
         {
             seed = GetNewSeed();
         }
 
-        public Game(string seed)
+        public GameEngine(string seed)
         {
             this.seed = seed;
         }
@@ -37,10 +37,10 @@ namespace AzureOcean
             // Load systems
             // The order here matters, as this is the order they
             // will run their operations.
-            systems.Add(new PlayerInputSystem(this));
-            systems.Add(new ActorSystem(this));
-            systems.Add(new PhysicsSystem(this));
-            systems.Add(new RenderSystem(this));
+            AttachSystem(new PlayerInputSystem());
+            AttachSystem(new TurnSystem());
+            AttachSystem(new PhysicsSystem());
+            AttachSystem(new RenderSystem());
 
             // Load the stage
             architect = new Architect();
@@ -51,6 +51,12 @@ namespace AzureOcean
 
             // Load additional entities
             //entities.Add(EntityFactory.CreateGoblin());
+        }
+
+        public void AttachSystem(GameSystem system)
+        {
+            system.Bind(this);
+            systems.Add(system);
         }
 
         public string GetNewSeed()

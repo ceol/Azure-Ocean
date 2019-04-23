@@ -11,6 +11,7 @@ namespace AzureOcean
 {
     public class Entity
     {
+        public Game game;
         public string name;
 
         List<Component> components = new List<Component>();
@@ -26,6 +27,11 @@ namespace AzureOcean
             this.name = name;
         }
 
+        public void Bind(Game game)
+        {
+            this.game = game;
+        }
+
         public T GetComponent<T>() where T : Component
         {
             for (int i = 0; i < components.Count; i++)
@@ -39,14 +45,14 @@ namespace AzureOcean
 
         public void AttachComponent(Component component)
         {
-            component.entity = this;
+            component.Bind(this);
             componentTypes.Add(component.GetType());
             components.Add(component);
         }
 
         public void RemoveComponent(Component component)
         {
-            component.entity = null;
+            component.Bind(null);
             componentTypes.Remove(component.GetType());
             components.Remove(component);
         }
@@ -73,12 +79,12 @@ namespace AzureOcean
 
     public static class EntityFactory
     {
-        public static Entity CreatePlayer(Game game)
+        public static Entity CreatePlayer(GameEngine game)
         {
             return CreateEntity("Player",
                 new Component[] {
                     new Player(),
-                    new Transform(),
+                    new Transform(new Vector(20, 20)),
                     new Health(30),
                     new Actor(game),
                     new Render("Images/elf"),
@@ -86,14 +92,14 @@ namespace AzureOcean
             );
         }
 
-        public static Entity CreateGoblin(Game game)
+        public static Entity CreateGoblin()
         {
             return CreateEntity("Goblin",
                 new Component[] {
                     new Hostile(),
                     new Transform(),
                     new Health(30),
-                    new Actor(game),
+                    new Actor(null),
                     new Render("Images/elf"),
                 }
             );
