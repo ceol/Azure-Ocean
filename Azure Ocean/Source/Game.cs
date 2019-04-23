@@ -38,6 +38,7 @@ namespace AzureOcean
             // The order here matters, as this is the order they
             // will run their operations.
             AttachSystem(new PlayerInputSystem());
+            AttachSystem(new HostileSystem());
             AttachSystem(new TurnSystem());
             AttachSystem(new PhysicsSystem());
             AttachSystem(new RenderSystem());
@@ -50,7 +51,7 @@ namespace AzureOcean
             entities.Add(EntityFactory.CreatePlayer(this));
 
             // Load additional entities
-            //entities.Add(EntityFactory.CreateGoblin());
+            entities.Add(EntityFactory.CreateGoblin(this));
         }
 
         public void AttachSystem(GameSystem system)

@@ -92,14 +92,14 @@ namespace AzureOcean
             );
         }
 
-        public static Entity CreateGoblin()
+        public static Entity CreateGoblin(GameEngine game)
         {
             return CreateEntity("Goblin",
                 new Component[] {
                     new Hostile(),
-                    new Transform(),
+                    new Transform(new Vector(21, 21)),
                     new Health(30),
-                    new Actor(null),
+                    new Actor(game),
                     new Render("Images/elf"),
                 }
             );

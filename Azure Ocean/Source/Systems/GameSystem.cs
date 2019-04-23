@@ -64,6 +64,21 @@ namespace AzureOcean
         }
     }
 
+    public class HostileSystem : GameSystem
+    {
+        Type[] Components = { typeof(Hostile), typeof(Actor) };
+
+        public override void Run()
+        {
+            entities = game.GetEntities(Components);
+            foreach (Entity entity in entities)
+            {
+                Actor actor = entity.GetComponent<Actor>();
+                actor.SetAction(new Walk(actor, Vector.left));
+            }
+        }
+    }
+
     // Handles existence on the board
     public class PhysicsSystem : GameSystem
     {
@@ -106,7 +121,10 @@ namespace AzureOcean
             {
                 GameAction action = actor.GetAction();
                 if (action == null)
+                {
+                    actor.SpendEnergy();
                     return;
+                }
 
                 ActionResult result = action.Perform();
                 while (result.alternative != null)
