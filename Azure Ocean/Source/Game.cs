@@ -49,16 +49,29 @@ namespace AzureOcean
             GenerateWorld();
 
             // Load the player
-            entities.Add(EntityFactory.CreatePlayer(this));
+            AttachEntity(EntityFactory.CreatePlayer(this));
 
             // Load additional entities
-            entities.Add(EntityFactory.CreateGoblin(this));
+            AttachEntity(EntityFactory.CreateGoblin(this));
         }
 
         public void AttachSystem(GameSystem system)
         {
             system.Bind(this);
             systems.Add(system);
+        }
+
+        public void AttachEntity(Entity entity)
+        {
+            if (CurrentStage != null)
+                CurrentStage.SetOccupant(entity);
+            entities.Add(entity);
+        }
+
+        public void DestroyEntity(Entity entity)
+        {
+            entities.Remove(entity);
+            CurrentStage.RemoveEntity(entity);
         }
 
         public string GetNewSeed()
@@ -77,7 +90,7 @@ namespace AzureOcean
             GenerateWorld();
         }
 
-        public List<Entity> GetEntities(Type[] componentTypes)
+        public List<Entity> GetEntities_(Type[] componentTypes)
         {
             List<Entity> filteredEntities = new List<Entity>();
             foreach (Entity entity in entities)
@@ -89,7 +102,7 @@ namespace AzureOcean
             return filteredEntities;
         }
 
-        public List<Entity> GetEntities<T>() where T : struct
+        public List<Entity> GetEntities<T>()
         {
             Type[] types = GetTypesFromFields(typeof(T).GetFields());
             List<Entity> filteredEntities = new List<Entity>();
@@ -106,7 +119,7 @@ namespace AzureOcean
             Type[] types = new Type[fields.Length];
             for (int i = 0; i < types.Length; i++)
             {
-                types[i] = fields[i].DeclaringType;
+                types[i] = fields[i].FieldType;
             }
             return types;
         }

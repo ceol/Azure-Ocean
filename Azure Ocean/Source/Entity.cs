@@ -67,6 +67,9 @@ namespace AzureOcean
 
         public bool HasComponents(Type[] types)
         {
+            if (types == null || types.Length == 0)
+                return false;
+
             foreach (Type type in types)
             {
                 if (!componentTypes.Contains(type))

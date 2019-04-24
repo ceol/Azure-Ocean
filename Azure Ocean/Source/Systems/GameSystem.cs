@@ -34,8 +34,8 @@ namespace AzureOcean
     {
         struct Components
         {
-            Actor actor;
-            Player player;
+            public Actor actor;
+            public Player player;
         }
 
         KeyboardState previousState;
@@ -43,6 +43,8 @@ namespace AzureOcean
         public override void Run()
         {
             entities = game.GetEntities<Components>();
+            if (entities.Count == 0)
+                return;
             Entity player = entities.First();
             Actor actor = player.GetComponent<Actor>();
             if (actor == null)
@@ -74,8 +76,8 @@ namespace AzureOcean
     {
         struct Components
         {
-            Actor actor;
-            Hostile hostile;
+            public Actor actor;
+            public Hostile hostile;
         }
 
         Dictionary<Actor, Entity> targets = new Dictionary<Actor, Entity>();
@@ -129,7 +131,7 @@ namespace AzureOcean
     {
         struct Components
         {
-            Transform transform;
+            public Transform transform;
         }
 
         public override void Run()
@@ -142,7 +144,7 @@ namespace AzureOcean
     {
         struct Components
         {
-            Actor actor;
+            public Actor actor;
         }
 
         LinkedList<Actor> turnOrder = new LinkedList<Actor>();
@@ -197,8 +199,8 @@ namespace AzureOcean
     {
         struct Components
         {
-            Transform transform;
-            Render render;
+            public Transform transform;
+            public Render render;
         }
 
         public override void Run()

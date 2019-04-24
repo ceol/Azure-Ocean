@@ -73,6 +73,20 @@ namespace AzureOcean
             }
             return null;
         }
+
+        public void SetOccupant(Entity entity)
+        {
+            Components.Transform transform = entity.GetComponent<Components.Transform>();
+            if (transform != null)
+            {
+                MoveTo(entity, transform.position);
+            }
+        }
+
+        public void RemoveEntity(Entity entity)
+        {
+            entityPositions.Remove(entity);
+        }
     }
 
     public class Architect

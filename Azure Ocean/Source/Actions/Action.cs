@@ -49,6 +49,12 @@ namespace AzureOcean.Actions
             
             Vector destination = position + direction;
             Stage stage = actor.game.CurrentStage;
+
+            Entity occupant = stage.GetOccupant(destination);
+            if (occupant != null)
+            {
+                return new ActionResult() { succeeded = false, alternative = new AttackAction(actor, occupant) };
+            }
             
             if (!stage.IsTraversable(destination))
             {
@@ -57,6 +63,22 @@ namespace AzureOcean.Actions
             
             actor.SetPosition(destination);
             stage.MoveTo(actor.entity, destination);
+            return ActionResult.SUCCESS;
+        }
+    }
+
+    public class AttackAction : GameAction
+    {
+        public Entity defender;
+
+        public AttackAction(Actor actor, Entity defender) : base(actor)
+        {
+            this.defender = defender;
+        }
+
+        public override ActionResult Perform()
+        {
+            Debug.WriteLine(actor.entity.name + " attacks " + defender.name);
             return ActionResult.SUCCESS;
         }
     }

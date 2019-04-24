@@ -143,10 +143,15 @@ namespace AzureOcean
             }
         }
 
+        struct DrawComponents
+        {
+            public Components.Transform transform;
+            public Components.Render render;
+        }
+
         protected void DrawEntities(SpriteBatch spriteBatch)
         {
-            Type[] filter = new Type[] { typeof(Components.Render), typeof(Components.Transform) };
-            foreach (Entity entity in game.GetEntities(filter))
+            foreach (Entity entity in game.GetEntities<DrawComponents>())
             {
                 Components.Transform transform = entity.GetComponent<Components.Transform>();
                 Components.Render render = entity.GetComponent<Components.Render>();
