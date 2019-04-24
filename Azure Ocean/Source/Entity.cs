@@ -100,7 +100,7 @@ namespace AzureOcean
             return CreateEntity("Goblin",
                 new Component[] {
                     new Hostile(),
-                    new Transform(new Vector(21, 21)),
+                    new Transform(new Vector(60, 40)),
                     new Health(30),
                     new Actor(game),
                     new Render("Images/elf"),

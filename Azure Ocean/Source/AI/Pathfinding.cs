@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Debug = System.Diagnostics.Debug;
+
 namespace AzureOcean
 {
     public class HostilePathfinder
@@ -33,7 +35,7 @@ namespace AzureOcean
         Vector destination;
 
         List<Node> queue = new List<Node>();
-        List<Node> visited = new List<Node>();
+        List<Vector> visited = new List<Vector>();
 
         int currentDistance;
 
@@ -72,9 +74,9 @@ namespace AzureOcean
 
                 queue.Remove(current);
 
-                if (visited.Contains(current))
+                if (visited.Contains(current.vector))
                     continue;
-                visited.Add(current);
+                visited.Add(current.vector);
 
                 currentDistance++;
 
@@ -83,7 +85,7 @@ namespace AzureOcean
                 foreach (Vector adjacentVector in adjacentVectors)
                 {
                     // ignore if we've already been there
-                    if (visited.FirstOrDefault(node => node.vector == adjacentVector) != null)
+                    if (visited.Contains(adjacentVector))
                         continue;
 
                     // if it's not in the queue, we should create
