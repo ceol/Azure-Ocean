@@ -83,6 +83,39 @@ namespace AzureOcean.Actions
         }
     }
 
+    public class HostileAction : GameAction
+    {
+        public Entity target;
+
+        public HostileAction(Actor actor, Entity target) : base(actor)
+        {
+            this.target = target;
+        }
+
+        public override ActionResult Perform()
+        {
+            if (target == null)
+                return ActionResult.FAILURE;
+
+            // Pathfind to target
+            Vector start = actor.GetPosition();
+            Vector destination = target.GetComponent<Transform>().position;
+
+            HostilePathfinder pathfinder = new HostilePathfinder(actor.game.CurrentStage);
+            List<Vector> steps = pathfinder.GetSteps(start, destination);
+
+            // Move to next available tile in path
+            if (steps.Count > 0)
+            {
+                Vector nextStep = steps.First();
+                Vector stepDirection = nextStep - start;
+                return new ActionResult() { succeeded = false, alternative = new Walk(actor, stepDirection) };
+            }
+
+            return ActionResult.FAILURE;
+        }
+    }
+
     public struct ActionResult
     {
         public bool succeeded;

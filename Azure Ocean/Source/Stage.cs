@@ -11,6 +11,7 @@ namespace AzureOcean
     public class Tile
     {
         public bool IsTraversable = true;
+        public Vector coordinate;
     }
 
     public class GrassTile : Tile
@@ -49,6 +50,14 @@ namespace AzureOcean
             tiles = new Tile[width, height];
         }
 
+        public Tile GetTile(Vector coordinate)
+        {
+            if (IsValid(coordinate))
+                return tiles[coordinate.x, coordinate.y];
+
+            return null;
+        }
+
         public bool IsTraversable(Vector coordinate)
         {
             return IsValid(coordinate) && tiles[coordinate.x, coordinate.y].IsTraversable;
@@ -56,7 +65,12 @@ namespace AzureOcean
 
         public bool IsValid(Vector coordinate)
         {
-            return coordinate.x >= 0 && coordinate.x < tiles.GetUpperBound(0) && coordinate.y >= 0 && coordinate.y < tiles.GetUpperBound(1);
+            return IsValid(coordinate.x, coordinate.y);
+        }
+
+        public bool IsValid(int x, int y)
+        {
+            return x >= 0 && x < tiles.GetUpperBound(0) && y >= 0 && y < tiles.GetUpperBound(1);
         }
 
         public void MoveTo(Entity entity, Vector position)
@@ -86,6 +100,27 @@ namespace AzureOcean
         public void RemoveEntity(Entity entity)
         {
             entityPositions.Remove(entity);
+        }
+
+        public List<Vector> GetAdjacentTraversableVectors(Vector coordinate)
+        {
+            List<Vector> neighbors = new List<Vector>();
+
+            int steps = 1;
+
+            for (int x = coordinate.x - steps; x <= coordinate.x + steps; x++)
+            {
+                for (int y = coordinate.y - steps; y <= coordinate.y + steps; y++)
+                {
+                    // only do cardinal directions
+                    if ((x == coordinate.x || y == coordinate.y) && IsValid(x, y) && tiles[x, y].IsTraversable)
+                    {
+                        neighbors.Add(new Vector(x, y));
+                    }
+                }
+            }
+
+            return neighbors;
         }
     }
 
@@ -145,10 +180,11 @@ namespace AzureOcean
             {
                 for (int y = 0; y < height; y++)
                 {
+                    Vector coordinate = new Vector(x, y);
                     if (map[x, y] == waterTile)
-                        stage.tiles[x, y] = new WaterTile();
+                        stage.tiles[x, y] = new WaterTile() { coordinate = coordinate };
                     else if (map[x, y] == grassTile)
-                        stage.tiles[x, y] = new GrassTile();
+                        stage.tiles[x, y] = new GrassTile() { coordinate = coordinate };
                 }
             }
 

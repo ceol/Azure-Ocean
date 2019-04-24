@@ -78,6 +78,7 @@ namespace AzureOcean
         {
             public Actor actor;
             public Hostile hostile;
+            public Transform transform;
         }
 
         Dictionary<Actor, Entity> targets = new Dictionary<Actor, Entity>();
@@ -88,17 +89,7 @@ namespace AzureOcean
             foreach (Entity entity in entities)
             {
                 Actor actor = entity.GetComponent<Actor>();
-                actor.SetAction(new Wait(actor));
-
-                // See if it has a target or check for new target
-                Entity target = GetTarget(actor);
-                if (target == null)
-                    continue;
-                
-                // Pathfind to target
-
-
-                // Move to next available tile in path
+                actor.SetAction(new HostileAction(actor, GetTarget(actor))); // default action (change per mob)
             }
         }
 
@@ -112,6 +103,11 @@ namespace AzureOcean
                 if (target == null)
                     targets.Remove(actor); // is this necessary?
                 return target;
+            }
+            else
+            {
+                // TODO: search range
+                target = game.entities.First();
             }
 
             return target;

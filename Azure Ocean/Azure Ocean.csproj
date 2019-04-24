@@ -46,6 +46,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Source\Actions\Action.cs" />
+    <Compile Include="Source\AI\Pathfinding.cs" />
     <Compile Include="Source\Components\Component.cs" />
     <Compile Include="Source\Entity.cs" />
     <Compile Include="Source\Game.cs" />
