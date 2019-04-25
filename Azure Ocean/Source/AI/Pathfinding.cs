@@ -10,7 +10,7 @@ namespace AzureOcean
 {
     public class HostilePathfinder
     {
-        class Node
+        class Node : IComparable<Node>
         {
             public Node parent;
 
@@ -19,14 +19,21 @@ namespace AzureOcean
             public int distance;
             public int heuristic;
 
-            public int Score
+            public int priority
             {
                 get { return distance + heuristic; }
             }
 
-            public int F { get => G + H; }
+            public int F { get => distance + heuristic; }
             public int G { get => distance; set => distance = value; }
             public int H { get => heuristic; set => heuristic = value; }
+
+            public int CompareTo(Node other)
+            {
+                if (this.priority < other.priority) return -1;
+                else if (this.priority > other.priority) return 1;
+                else return 0;
+            }
         }
 
         Stage stage;
@@ -34,7 +41,7 @@ namespace AzureOcean
         Vector start;
         Vector destination;
 
-        List<Node> queue = new List<Node>();
+        PriorityQueue<Node> queue = new PriorityQueue<Node>();
         List<Vector> visited = new List<Vector>();
 
         int currentDistance;
@@ -62,17 +69,14 @@ namespace AzureOcean
             currentDistance = 0;
 
             Node current = CreateNode(null, start);
-            queue.Add(current);
+            queue.Enqueue(current);
 
-            while (queue.Any())
+            while (queue.Count > 0)
             {
                 // Get the next node
-                int lowestScore = queue.Min(node => node.F);
-                current = queue.First(node => node.F == lowestScore);
+                current = queue.Dequeue();
                 if (current.vector == destination)
                     break;
-
-                queue.Remove(current);
 
                 if (visited.Contains(current.vector))
                     continue;
@@ -88,20 +92,18 @@ namespace AzureOcean
                     if (visited.Contains(adjacentVector))
                         continue;
 
-                    // if it's not in the queue, we should create
-                    Node adjacentNode = queue.FirstOrDefault(node => node.vector == adjacentVector);
+                    Node adjacentNode = SearchQueue(adjacentVector);
                     if (adjacentNode == null)
                     {
                         adjacentNode = CreateNode(current, adjacentVector);
-                        queue.Add(adjacentNode);
+                        queue.Enqueue(adjacentNode);
                     }
                     else
                     {
-                        // check to see if this is the better path for that node
-                        if (currentDistance + adjacentNode.heuristic < adjacentNode.Score)
+                        if (currentDistance + adjacentNode.heuristic < adjacentNode.priority)
                         {
                             adjacentNode.distance = currentDistance;
-                            adjacentNode.parent = current;
+                            Requeue(adjacentNode);
                         }
                     }
                 }
@@ -118,9 +120,26 @@ namespace AzureOcean
             return steps;
         }
 
+        Node SearchQueue(Vector vector)
+        {
+            foreach (Node node in queue.GetQueue())
+            {
+                if (node.vector == vector)
+                    return node;
+            }
+
+            return null;
+        }
+
+        void Requeue(Node updatedNode)
+        {
+            queue.Remove(updatedNode);
+            queue.Enqueue(updatedNode);
+        }
+
         public int CalculateHeuristic(Vector coordinate, Vector destination)
         {
-            return Math.Abs(destination.x - coordinate.x) + Math.Abs(destination.y - coordinate.y);
+            return (int)(Math.Pow(Math.Abs(destination.x - coordinate.x), 2) + Math.Pow(Math.Abs(destination.y - coordinate.y), 2));
         }
     }
 }
