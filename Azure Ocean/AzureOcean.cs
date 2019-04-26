@@ -15,10 +15,10 @@ namespace AzureOcean
         SpriteBatch spriteBatch;
 
         int windowWidthPx = 1600;
-        int windowHeightPx = 750;
+        int windowHeightPx = 790;
 
-        int tileWidthPx = 8;
-        int tileHeightPx = 8;
+        int tileWidthPx = 6;
+        int tileHeightPx = 6;
 
         private Texture2D grassTileSprite;
         private Texture2D oceanTileSprite;

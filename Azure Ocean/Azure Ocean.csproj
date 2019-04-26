@@ -50,7 +50,7 @@
     <Compile Include="Source\PriorityQueue.cs" />
     <Compile Include="Source\Components\Component.cs" />
     <Compile Include="Source\Entity.cs" />
-    <Compile Include="Source\Game.cs" />
+    <Compile Include="Source\GameState.cs" />
     <Compile Include="Source\GameEvent.cs" />
     <Compile Include="Source\Stage.cs" />
     <Compile Include="Source\Systems\GameSystem.cs" />
