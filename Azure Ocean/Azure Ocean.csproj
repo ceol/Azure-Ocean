@@ -54,6 +54,7 @@
     <Compile Include="Source\GameEvent.cs" />
     <Compile Include="Source\Stage.cs" />
     <Compile Include="Source\Systems\GameSystem.cs" />
+    <Compile Include="Source\Systems\HostileSystem.cs" />
     <Compile Include="Source\Vector.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -70,50 +70,6 @@ namespace AzureOcean
         }
     }
 
-    // Implements logic for hostile actors
-    // This sets their next action based on any available targets
-    public class HostileSystem : GameSystem
-    {
-        struct Components
-        {
-            public Actor actor;
-            public Hostile hostile;
-            public Transform transform;
-        }
-
-        Dictionary<Actor, Entity> targets = new Dictionary<Actor, Entity>();
-
-        public override void Run()
-        {
-            entities = game.GetEntities<Components>();
-            foreach (Entity entity in entities)
-            {
-                Actor actor = entity.GetComponent<Actor>();
-                actor.SetAction(new HostileAction(actor, GetTarget(actor))); // default action (change per mob)
-            }
-        }
-
-        public Entity GetTarget(Actor actor)
-        {
-            Entity target = null;
-
-            if (targets.ContainsKey(actor))
-            {
-                target = targets[actor];
-                if (target == null)
-                    targets.Remove(actor); // is this necessary?
-                return target;
-            }
-            else
-            {
-                // TODO: search range
-                target = game.entities.First();
-            }
-
-            return target;
-        }
-    }
-
     public class ProjectileSystem : GameSystem
     {
         public override void Run()

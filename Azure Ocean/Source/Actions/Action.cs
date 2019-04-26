@@ -67,6 +67,35 @@ namespace AzureOcean.Actions
         }
     }
 
+    public class WalkTowards : GameAction
+    {
+        public Vector destination;
+
+        public WalkTowards(Actor actor, Vector destination) : base(actor)
+        {
+            this.destination = destination;
+        }
+
+        public override ActionResult Perform()
+        {
+            Debug.WriteLine(actor.entity.name + " walks towards " + destination);
+
+            Vector start = actor.GetPosition();
+            HostilePathfinder pathfinder = new HostilePathfinder(actor.game.CurrentStage);
+            List<Vector> steps = pathfinder.GetSteps(start, destination);
+
+            // Move to next available tile in path
+            if (steps.Count > 0)
+            {
+                Vector nextStep = steps.First();
+                Vector stepDirection = nextStep - start;
+                return new ActionResult() { succeeded = false, alternative = new Walk(actor, stepDirection) };
+            }
+
+            return ActionResult.FAILURE;
+        }
+    }
+
     public class AttackAction : GameAction
     {
         public Entity defender;

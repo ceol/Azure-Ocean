@@ -154,7 +154,8 @@ namespace AzureOcean.Components
 
     public class Hostile : Component
     {
-        public int range = 2;
+        public int visionRange = 5;
+        public int territoryRange = 5;
     }
 
     public class Render : Component
