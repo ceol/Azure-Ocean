@@ -70,7 +70,7 @@ namespace AzureOcean
 
         public bool IsValid(int x, int y)
         {
-            return x >= 0 && x < tiles.GetUpperBound(0) && y >= 0 && y < tiles.GetUpperBound(1);
+            return x >= 0 && x <= tiles.GetUpperBound(0) && y >= 0 && y <= tiles.GetUpperBound(1);
         }
 
         public void MoveTo(Entity entity, Vector position)
@@ -192,13 +192,13 @@ namespace AzureOcean
                 {
                     coordX = x;
                     if (x >= xReverseAt)
-                        coordX = width - 1 - (x - xReverseAt);
+                        coordX = width - 1 - (x % xReverseAt);
 
                     for (int y = 0; y < height; y++)
                     {
                         coordY = y;
                         if (y >= yReverseAt)
-                            coordY = height - 1 - (y - yReverseAt);
+                            coordY = height - 1 - (y % yReverseAt);
 
                         int numWaters = CountSurroundingWaters(regionMap, coordX, coordY, 1);
                         int numWaters2Step = CountSurroundingWaters(regionMap, coordX, coordY, 2);
@@ -230,7 +230,7 @@ namespace AzureOcean
 
             for (int i = 0; i < 3; i++)
             {
-                PlaceRegion(map, GenerateRegion(width, height, cellular), 0, 0);
+                map = PlaceRegion(map, GenerateRegion(width, height, cellular), 0, 0);
             }
 
             return map;
@@ -240,24 +240,25 @@ namespace AzureOcean
         {
             CellularAutomata cellular = new CellularAutomata()
             {
-                percentRandomWater = 47,
-                numGenerations = 10,
+                percentRandomWater = 45,
+                numGenerations = 7,
                 becomesWaterAt = 4,
-                becomesGrassAt = 3,
+                becomesGrassAt = 4,
                 secondaryFillUntil = 4,
-                secondaryFillLowerBound = 3,
+                secondaryFillLowerBound = 2,
             };
             int[,] map = GetMap(width, height);
 
             for (int i = 0; i < 1; i++)
             {
-                PlaceRegion(map, GenerateRegion(width, height, cellular), 0, 0);
+                map = PlaceRegion(map, GenerateRegion(width, height, cellular), 0, 0);
             }
 
-            for (int x = 0; x < map.GetUpperBound(0); x++)
+            for (int x = 0; x < width; x++)
             {
-                for (int y = 0; y < map.GetUpperBound(1); y++)
+                for (int y = 0; y < height; y++)
                 {
+                    if (x == width - 1) { }
                     if (map[x, y] == grassTile)
                         map[x, y] = waterTile;
                     else if (map[x, y] == waterTile)
@@ -283,12 +284,12 @@ namespace AzureOcean
 
             for (int i = 0; i < 1; i++)
             {
-                PlaceRegion(map, GenerateRegion(width, height, cellular), 0, 0);
+                map = PlaceRegion(map, GenerateRegion(width, height, cellular), 0, 0);
             }
 
-            for (int x = 0; x < map.GetUpperBound(0); x++)
+            for (int x = 0; x < width; x++)
             {
-                for (int y = 0; y < map.GetUpperBound(1); y++)
+                for (int y = 0; y < height; y++)
                 {
                     if (map[x, y] == grassTile)
                         map[x, y] = waterTile;
@@ -315,12 +316,12 @@ namespace AzureOcean
 
             for (int i = 0; i < 1; i++)
             {
-                PlaceRegion(map, GenerateRegion(width, height, cellular), 0, 0);
+                map = PlaceRegion(map, GenerateRegion(width, height, cellular), 0, 0);
             }
 
-            for (int x = 0; x < map.GetUpperBound(0); x++)
+            for (int x = 0; x < width; x++)
             {
-                for (int y = 0; y < map.GetUpperBound(1); y++)
+                for (int y = 0; y < height; y++)
                 {
                     if (map[x, y] == grassTile)
                         map[x, y] = waterTile;
@@ -347,30 +348,30 @@ namespace AzureOcean
 
             for (int i = 0; i < 1; i++)
             {
-                PlaceRegion(map, GenerateRegion(width, height, cellular), 0, 0);
+                map = PlaceRegion(map, GenerateRegion(width, height, cellular), 0, 0);
             }
 
             return map;
         }
 
         // Paste the region map into the world map starting at the offset coordinate
-        public void PlaceRegion(int[,] map, int[,] regionMap, int offsetX, int offsetY)
+        public int[,] PlaceRegion(int[,] map, int[,] regionMap, int offsetX, int offsetY)
         {
-            for (int x = 0; x < regionMap.GetUpperBound(0); x++)
+            for (int x = 0; x <= regionMap.GetUpperBound(0); x++)
             {
-                for (int y = 0; y < regionMap.GetUpperBound(1); y++)
+                for (int y = 0; y <= regionMap.GetUpperBound(1); y++)
                 {
                     int realX = x + offsetX;
                     int realY = y + offsetY;
 
-                    if (realX < map.GetUpperBound(0) && realY < map.GetUpperBound(1))
+                    if (realX <= map.GetUpperBound(0) && realY <= map.GetUpperBound(1))
                     {
-                        int tile = regionMap[x, y];
-                        if (tile == grassTile)
-                            map[realX, realY] = tile;
+                        map[realX, realY] = regionMap[x, y];
                     }
                 }
             }
+
+            return map;
         }
 
         public Stage GenerateWorld(int width, int height, string seed)
@@ -401,17 +402,19 @@ namespace AzureOcean
 
                 int randomX = rand.Next(0, width);
                 int randomY = rand.Next(0, height);
-                PlaceRegion(map, regionMap, 0, 0);
+                map = PlaceRegion(map, regionMap, 0, 0);
             }
             */
 
-            PlaceRegion(map, GenerateMountainRegion(200, 100), 0, 0);
+            int[,] regionMap = GenerateForestRegion(200, 100);
+            map = PlaceRegion(map, regionMap, 0, 0);
 
             Stage stage = new Stage(width, height);
             for (int x = 0; x < width; x++)
             {
                 for (int y = 0; y < height; y++)
                 {
+                    if (x == width - 1) { }
                     Vector coordinate = new Vector(x, y);
                     if (map[x, y] == waterTile)
                         stage.tiles[x, y] = new WaterTile() { coordinate = coordinate };
@@ -444,7 +447,7 @@ namespace AzureOcean
 
         public bool IsWater(int[,] map, int x, int y)
         {
-            if (x >= 0 && x < map.GetUpperBound(0) && y >= 0 && y < map.GetUpperBound(1))
+            if (x >= 0 && x <= map.GetUpperBound(0) && y >= 0 && y <= map.GetUpperBound(1))
                 return map[x, y] == waterTile;
 
             // If we're out of bounds, treat as water.
@@ -537,7 +540,7 @@ namespace AzureOcean
 
         public bool IsWater(int x, int y)
         {
-            if (x >= 0 && x < map.GetUpperBound(0) && y >= 0 && y < map.GetUpperBound(1))
+            if (x >= 0 && x <= map.GetUpperBound(0) && y >= 0 && y <= map.GetUpperBound(1))
                 return map[x, y] == waterTile;
 
             // If we're out of bounds, treat as water.

@@ -87,7 +87,7 @@ namespace AzureOcean
             return CreateEntity("Player",
                 new Component[] {
                     new Player(),
-                    new Transform(new Vector(20, 20)),
+                    new Transform(new Vector(0, 98)),
                     new Health(30),
                     new Actor(game),
                     new Render("Images/elf"),

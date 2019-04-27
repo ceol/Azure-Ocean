@@ -17,8 +17,8 @@ namespace AzureOcean
         int windowWidthPx = 1600;
         int windowHeightPx = 790;
 
-        int tileWidthPx = 6;
-        int tileHeightPx = 6;
+        int tileWidthPx = 5;
+        int tileHeightPx = 5;
 
         private Texture2D grassTileSprite;
         private Texture2D oceanTileSprite;
@@ -122,23 +122,21 @@ namespace AzureOcean
         protected void DrawStage(SpriteBatch spriteBatch, Stage stage)
         {
             Tile tile;
-            Texture2D tileTexture;
+            Texture2D tileTexture = grassTileSprite;
 
             for (int x = 0; x < stage.width; x++)
             {
-                // The Y axis is flipped when drawing sprites.
-                for (int y = stage.height - 1; y >= 0; y--)
+                for (int y = 0; y < stage.height; y++)
                 {
                     tile = stage.tiles[x, y];
                     if (tile is WaterTile)
                         tileTexture = oceanTileSprite;
                     else if (tile is GrassTile)
                         tileTexture = grassTileSprite;
-                    else
-                        tileTexture = grassTileSprite;
 
-                    int yCoord = (stage.height - y) * tileHeightPx;
-                    spriteBatch.Draw(tileTexture, new Rectangle(x * tileWidthPx, yCoord, tileWidthPx, tileHeightPx), Color.White);
+                    // The Y axis is flipped when drawing sprites.
+                    int yCoord = stage.height - y;
+                    spriteBatch.Draw(tileTexture, new Rectangle(x * tileWidthPx, yCoord * tileHeightPx, tileWidthPx, tileHeightPx), Color.White);
                 }
             }
         }
