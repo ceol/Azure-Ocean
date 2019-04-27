@@ -134,28 +134,14 @@ namespace AzureOcean
             // the dense trees surrounding the zone.
             CellularAutomata cellular = new CellularAutomata()
             {
-                percentRandomFilled = 45,
-                numGenerations = 7,
+                percentRandomFilled = 40,
+                numGenerations = 6,
                 fillsAt = 4,
                 emptiesAt = 4,
-                emptyFillsGenCount = 4,
+                emptyFillsGenCount = 0,
                 emptyFillsAt = 2,
             };
             borderMap = GenerateCellularAutomataMap(width, height, cellular);
-            List<Vector> borderTiles = GetConnectedTiles(borderMap, new Vector(0, 0));
-            // Empty non-border tiles
-            for (int x = 0; x < width; x++)
-            {
-                for (int y = 0; y < height; y++)
-                {
-                    Vector coordinate = new Vector(x, y);
-                    if (borderTiles.Contains(coordinate))
-                        continue;
-                    if (borderMap[x, y] == filledTile)
-                        borderMap[x, y] = emptyTile;
-
-                }
-            }
 
             return borderMap;
         }
