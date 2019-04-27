@@ -31,6 +31,11 @@ namespace AzureOcean
             get { return new Vector(1, 0); }
         }
 
+        public static Vector[] cardinals
+        {
+            get { return new Vector[] { Vector.up, Vector.down, Vector.left, Vector.right }; }
+        }
+
         public static Vector operator +(Vector a, Vector b)
         {
             return new Vector(a.x + b.x, a.y + b.y);

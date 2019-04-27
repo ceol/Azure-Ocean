@@ -8,19 +8,19 @@ namespace AzureOcean
 {
     public class WorldArchitect
     {
-        int waterTile = 1; // "wall" tile
-        int grassTile = 0; // "floor" tile
+        int filledTile = 1;
+        int emptyTile = 0;
 
         Random rand;
 
-        public int[,] GetMap(int width, int height)
+        public int[,] GetBaseMap(int width, int height)
         {
             int[,] newMap = new int[width, height];
             for (int x = 0; x < width; x++)
             {
                 for (int y = 0; y < height; y++)
                 {
-                    newMap[x, y] = waterTile;
+                    newMap[x, y] = filledTile;
                 }
             }
             return newMap;
@@ -28,40 +28,38 @@ namespace AzureOcean
 
         public struct CellularAutomata
         {
-            public int percentRandomWater;
+            public int percentRandomFilled;
 
             public int numGenerations;
-            public int becomesWaterAt;
-            public int becomesGrassAt;
+            public int fillsAt;
+            public int emptiesAt;
 
-            public int secondaryFillUntil;
-            public int secondaryFillLowerBound;
+            public int emptyFillsGenCount;
+            public int emptyFillsAt;
         }
 
-        public int[,] GenerateRegion(int width, int height, CellularAutomata cellular)
+        public int[,] GenerateCellularAutomataMap(int width, int height, CellularAutomata cellular)
         {
-            int[,] regionMap = GetMap(width, height);
-            int totalTiles = width * height;
+            int[,] map = GetBaseMap(width, height);
 
             if (rand == null)
                 rand = new Random();
 
             // Fill initial map randomly
-            int percentWaterChance = cellular.percentRandomWater;
             for (int x = 0; x < width; x++)
             {
                 for (int y = 0; y < height; y++)
                 {
-                    // Borders should be water
+                    // Borders should be filled
                     if (x == 0 || x == width - 1 || y == 0 || y == height - 1)
-                        regionMap[x, y] = waterTile;
+                        map[x, y] = filledTile;
                     else
-                        regionMap[x, y] = rand.Next(0, 100) < percentWaterChance ? waterTile : grassTile;
+                        map[x, y] = rand.Next(0, 100) < cellular.percentRandomFilled ? filledTile : emptyTile;
                 }
             }
 
             // Run cellular automata rules
-            // Reversing the loop halfway through attempts to ensure the tiles
+            // Reversing the loop halfway through attempts to ensure the filled tiles
             // don't look like they're offset or gathering on one side of the map.
             int numGenerations = cellular.numGenerations;
             for (int generation = 0; generation < numGenerations; generation++)
@@ -82,158 +80,84 @@ namespace AzureOcean
                         if (y >= yReverseAt)
                             coordY = height - 1 - (y % yReverseAt);
 
-                        int numWaters = CountSurroundingWaters(regionMap, coordX, coordY, 1);
-                        int numWaters2Step = CountSurroundingWaters(regionMap, coordX, coordY, 2);
+                        int numFilled = CountSurroundingFilled(map, coordX, coordY, 1);
+                        int numFilledWider = CountSurroundingFilled(map, coordX, coordY, 2);
 
-                        // The OR check tries to ensure large open areas are split up by water
-                        if (numWaters > cellular.becomesWaterAt || (generation < cellular.secondaryFillUntil && numWaters2Step < cellular.secondaryFillLowerBound))
-                            regionMap[coordX, coordY] = waterTile;
-                        else if (numWaters < cellular.becomesGrassAt)
-                            regionMap[coordX, coordY] = grassTile;
+                        // The OR check tries to ensure large empty areas are split up
+                        if (numFilled > cellular.fillsAt || (generation < cellular.emptyFillsGenCount && numFilledWider < cellular.emptyFillsAt))
+                            map[coordX, coordY] = filledTile;
+                        else if (numFilled < cellular.emptiesAt)
+                            map[coordX, coordY] = emptyTile;
                     }
                 }
             }
 
-            return regionMap;
-        }
-
-        public int[,] GenerateIslandRegion(int width, int height)
-        {
-            CellularAutomata cellular = new CellularAutomata()
-            {
-                percentRandomWater = 48,
-                numGenerations = 7,
-                becomesWaterAt = 4,
-                becomesGrassAt = 3,
-                secondaryFillUntil = 4,
-                secondaryFillLowerBound = 3,
-            };
-            int[,] map = GetMap(width, height);
-
-            for (int i = 0; i < 3; i++)
-            {
-                map = PlaceRegion(map, GenerateRegion(width, height, cellular), 0, 0);
-            }
-
             return map;
         }
 
-        public int[,] GenerateForestRegion(int width, int height)
+        public List<Vector> GetConnectedTiles(int[,] map, Vector start)
         {
-            CellularAutomata cellular = new CellularAutomata()
-            {
-                percentRandomWater = 45,
-                numGenerations = 7,
-                becomesWaterAt = 4,
-                becomesGrassAt = 4,
-                secondaryFillUntil = 4,
-                secondaryFillLowerBound = 2,
-            };
-            int[,] map = GetMap(width, height);
+            int originalTile = map[start.x, start.y];
 
-            for (int i = 0; i < 1; i++)
+            Queue<Vector> queue = new Queue<Vector>();
+            queue.Enqueue(start);
+
+            Vector current;
+
+            List<Vector> group = new List<Vector>();
+            while (queue.Count > 0)
             {
-                map = PlaceRegion(map, GenerateRegion(width, height, cellular), 0, 0);
+                current = queue.Dequeue();
+                group.Add(current);
+
+                foreach (Vector direction in Vector.cardinals)
+                {
+                    Vector sibling = current + direction;
+                    if (IsValid(map, sibling.x, sibling.y) && !group.Contains(sibling) && !queue.Contains(sibling) && map[sibling.x, sibling.y] == originalTile)
+                        queue.Enqueue(sibling);
+                }
             }
 
+            return group;
+        }
+
+        public bool IsValid(int[,] map, int x, int y)
+        {
+            return (x >= 0 && x < map.GetLength(0) && y >= 0 && y < map.GetLength(1));
+        }
+
+        public int[,] GenerateForest(int width, int height)
+        {
+            int[,] borderMap = GetBaseMap(width, height);
+
+            // This generates a map with a blob-like border to represent
+            // the dense trees surrounding the zone.
+            CellularAutomata cellular = new CellularAutomata()
+            {
+                percentRandomFilled = 45,
+                numGenerations = 7,
+                fillsAt = 4,
+                emptiesAt = 4,
+                emptyFillsGenCount = 4,
+                emptyFillsAt = 2,
+            };
+            borderMap = GenerateCellularAutomataMap(width, height, cellular);
+            List<Vector> borderTiles = GetConnectedTiles(borderMap, new Vector(0, 0));
+            // Empty non-border tiles
             for (int x = 0; x < width; x++)
             {
                 for (int y = 0; y < height; y++)
                 {
-                    if (x == width - 1) { }
-                    if (map[x, y] == grassTile)
-                        map[x, y] = waterTile;
-                    else if (map[x, y] == waterTile)
-                        map[x, y] = grassTile;
+                    Vector coordinate = new Vector(x, y);
+                    if (borderTiles.Contains(coordinate))
+                        continue;
+                    if (borderMap[x, y] == filledTile)
+                        borderMap[x, y] = emptyTile;
+
                 }
             }
 
-            return map;
-        }
-
-        public int[,] GenerateDesertRegion(int width, int height)
-        {
-            CellularAutomata cellular = new CellularAutomata()
-            {
-                percentRandomWater = 50,
-                numGenerations = 10,
-                becomesWaterAt = 4,
-                becomesGrassAt = 3,
-                secondaryFillUntil = 4,
-                secondaryFillLowerBound = 2,
-            };
-            int[,] map = GetMap(width, height);
-
-            for (int i = 0; i < 1; i++)
-            {
-                map = PlaceRegion(map, GenerateRegion(width, height, cellular), 0, 0);
-            }
-
-            for (int x = 0; x < width; x++)
-            {
-                for (int y = 0; y < height; y++)
-                {
-                    if (map[x, y] == grassTile)
-                        map[x, y] = waterTile;
-                    else if (map[x, y] == waterTile)
-                        map[x, y] = grassTile;
-                }
-            }
-
-            return map;
-        }
-
-        public int[,] GenerateSnowRegion(int width, int height)
-        {
-            CellularAutomata cellular = new CellularAutomata()
-            {
-                percentRandomWater = 50,
-                numGenerations = 10,
-                becomesWaterAt = 4,
-                becomesGrassAt = 3,
-                secondaryFillUntil = 4,
-                secondaryFillLowerBound = 2,
-            };
-            int[,] map = GetMap(width, height);
-
-            for (int i = 0; i < 1; i++)
-            {
-                map = PlaceRegion(map, GenerateRegion(width, height, cellular), 0, 0);
-            }
-
-            for (int x = 0; x < width; x++)
-            {
-                for (int y = 0; y < height; y++)
-                {
-                    if (map[x, y] == grassTile)
-                        map[x, y] = waterTile;
-                    else if (map[x, y] == waterTile)
-                        map[x, y] = grassTile;
-                }
-            }
-
-            return map;
-        }
-
-        public int[,] GenerateMountainRegion(int width, int height)
-        {
-            CellularAutomata cellular = new CellularAutomata()
-            {
-                percentRandomWater = 45,
-                numGenerations = 7,
-                becomesWaterAt = 4,
-                becomesGrassAt = 4,
-                secondaryFillUntil = 4,
-                secondaryFillLowerBound = 2,
-            };
-            int[,] map = GetMap(width, height);
-
-            for (int i = 0; i < 1; i++)
-            {
-                map = PlaceRegion(map, GenerateRegion(width, height, cellular), 0, 0);
-            }
-
-            return map;
+            return borderMap;
         }
 
         // Paste the region map into the world map starting at the offset coordinate
@@ -258,7 +182,6 @@ namespace AzureOcean
 
         public Stage GenerateWorld(int width, int height, string seed)
         {
-            int[,] map = GetMap(width, height);
             rand = new Random(seed.GetHashCode());
 
             /*
@@ -288,8 +211,7 @@ namespace AzureOcean
             }
             */
 
-            int[,] regionMap = GenerateForestRegion(200, 100);
-            map = PlaceRegion(map, regionMap, 0, 0);
+            int[,] map = GenerateForest(200, 100);
 
             Stage stage = new Stage(width, height);
             for (int x = 0; x < width; x++)
@@ -298,9 +220,9 @@ namespace AzureOcean
                 {
                     if (x == width - 1) { }
                     Vector coordinate = new Vector(x, y);
-                    if (map[x, y] == waterTile)
+                    if (map[x, y] == filledTile)
                         stage.tiles[x, y] = new WaterTile() { coordinate = coordinate };
-                    else if (map[x, y] == grassTile)
+                    else if (map[x, y] == emptyTile)
                         stage.tiles[x, y] = new GrassTile() { coordinate = coordinate };
                 }
             }
@@ -308,9 +230,9 @@ namespace AzureOcean
             return stage;
         }
 
-        public int CountSurroundingWaters(int[,] map, int x, int y, int steps)
+        public int CountSurroundingFilled(int[,] map, int x, int y, int steps)
         {
-            int waterCount = 0;
+            int filledCount = 0;
 
             for (int neighborX = x - steps; neighborX <= x + steps; neighborX++)
             {
@@ -318,21 +240,21 @@ namespace AzureOcean
                 {
                     if (neighborX != x || neighborY != y)
                     {
-                        if (IsWater(map, neighborX, neighborY))
-                            waterCount++;
+                        if (IsFilled(map, neighborX, neighborY))
+                            filledCount++;
                     }
                 }
             }
 
-            return waterCount;
+            return filledCount;
         }
 
-        public bool IsWater(int[,] map, int x, int y)
+        public bool IsFilled(int[,] map, int x, int y)
         {
-            if (x >= 0 && x <= map.GetUpperBound(0) && y >= 0 && y <= map.GetUpperBound(1))
-                return map[x, y] == waterTile;
+            if (IsValid(map, x, y))
+                return map[x, y] == filledTile;
 
-            // If we're out of bounds, treat as water.
+            // If we're out of bounds, treat as filled.
             return true;
         }
     }
