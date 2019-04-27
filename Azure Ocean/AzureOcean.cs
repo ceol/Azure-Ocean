@@ -14,11 +14,14 @@ namespace AzureOcean
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
-        int windowWidthPx = 1600;
-        int windowHeightPx = 790;
+        int windowWidthPx = 1010;
+        int windowHeightPx = 510;
 
         int tileWidthPx = 5;
         int tileHeightPx = 5;
+
+        int stageXOffset = 1;
+        int stageYOffset = 1;
 
         private Texture2D grassTileSprite;
         private Texture2D treeTileSprite;
@@ -106,7 +109,7 @@ namespace AzureOcean
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(new Color(12, 33, 23));
 
             // TODO: Add your drawing code here
             spriteBatch.Begin();
@@ -139,8 +142,9 @@ namespace AzureOcean
                         tileTexture = waterTileSprite;
 
                     // The Y axis is flipped when drawing sprites.
-                    int yCoord = stage.height - y;
-                    spriteBatch.Draw(tileTexture, new Rectangle(x * tileWidthPx, yCoord * tileHeightPx, tileWidthPx, tileHeightPx), Color.White);
+                    int xCoord = x + stageXOffset;
+                    int yCoord = (stage.height - y - 1) + stageYOffset;
+                    spriteBatch.Draw(tileTexture, new Rectangle(xCoord * tileWidthPx, yCoord * tileHeightPx, tileWidthPx, tileHeightPx), Color.White);
                 }
             }
         }
@@ -158,9 +162,9 @@ namespace AzureOcean
                 Components.Transform transform = entity.GetComponent<Components.Transform>();
                 Components.Render render = entity.GetComponent<Components.Render>();
 
-                int xCoord = transform.position.x * tileWidthPx;
-                int yCoord = (game.CurrentStage.height - transform.position.y) * tileHeightPx;
-                spriteBatch.Draw(elfSprite, new Rectangle(xCoord, yCoord, tileWidthPx, tileHeightPx), Color.White);
+                int xCoord = transform.position.x + stageXOffset;
+                int yCoord = (game.CurrentStage.height - transform.position.y) + stageYOffset;
+                spriteBatch.Draw(elfSprite, new Rectangle(xCoord * tileWidthPx, yCoord * tileHeightPx, tileWidthPx, tileHeightPx), Color.White);
             }
         }
     }
