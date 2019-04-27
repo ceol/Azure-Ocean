@@ -31,7 +31,12 @@ namespace AzureOcean
 
     public class StoneTile : Tile
     {
-        
+        public StoneTile() { IsTraversable = false; }
+    }
+
+    public class TreeTile : Tile
+    {
+        public TreeTile() { IsTraversable = false; }
     }
 
     public class Stage

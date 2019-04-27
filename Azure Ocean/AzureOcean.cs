@@ -21,7 +21,8 @@ namespace AzureOcean
         int tileHeightPx = 5;
 
         private Texture2D grassTileSprite;
-        private Texture2D oceanTileSprite;
+        private Texture2D treeTileSprite;
+        private Texture2D waterTileSprite;
         private Texture2D elfSprite;
 
         public GameState game;
@@ -64,7 +65,8 @@ namespace AzureOcean
 
             // TODO: use this.Content to load your game content here
             grassTileSprite = Content.Load<Texture2D>("Images/grass");
-            oceanTileSprite = Content.Load<Texture2D>("Images/ocean");
+            treeTileSprite = Content.Load<Texture2D>("Images/tree");
+            waterTileSprite = Content.Load<Texture2D>("Images/water");
             elfSprite = Content.Load<Texture2D>("Images/elf");
         }
 
@@ -129,10 +131,12 @@ namespace AzureOcean
                 for (int y = 0; y < stage.height; y++)
                 {
                     tile = stage.tiles[x, y];
-                    if (tile is WaterTile)
-                        tileTexture = oceanTileSprite;
-                    else if (tile is GrassTile)
+                    if (tile is GrassTile)
                         tileTexture = grassTileSprite;
+                    else if (tile is TreeTile)
+                        tileTexture = treeTileSprite;
+                    else if (tile is WaterTile)
+                        tileTexture = waterTileSprite;
 
                     // The Y axis is flipped when drawing sprites.
                     int yCoord = stage.height - y;

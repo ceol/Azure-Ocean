@@ -128,42 +128,66 @@ namespace AzureOcean
 
         public int[,] GenerateForest(int width, int height)
         {
-            int[,] borderMap = GetBaseMap(width, height);
+            // Tile mappings
+            int waterTile = 2;
 
             // This generates a map with a blob-like border to represent
             // the dense trees surrounding the zone.
-            CellularAutomata cellular = new CellularAutomata()
+            CellularAutomata treeCellular = new CellularAutomata()
             {
-                percentRandomFilled = 40,
-                numGenerations = 6,
+                percentRandomFilled = 45,
+                numGenerations = 7,
                 fillsAt = 4,
                 emptiesAt = 4,
                 emptyFillsGenCount = 0,
                 emptyFillsAt = 2,
             };
-            borderMap = GenerateCellularAutomataMap(width, height, cellular);
 
-            return borderMap;
+            // This generates a map of small pools to represent areas of water.
+            // These tiles can overwrite empty but not any other.
+            CellularAutomata waterCellular = new CellularAutomata()
+            {
+                percentRandomFilled = 40,
+                numGenerations = 4,
+                fillsAt = 4,
+                emptiesAt = 4,
+                emptyFillsGenCount = 0,
+                emptyFillsAt = 2,
+            };
+
+            // Generate the trees
+            int [,] treeMap = GenerateCellularAutomataMap(width, height, treeCellular);
+
+            // Generate pools of water
+            filledTile = waterTile;
+            int[,] waterMap = GenerateCellularAutomataMap(width, height, waterCellular);
+            filledTile = 1;
+
+            int[,] forestMap = PlaceRegion(treeMap, waterMap, 0, 0);
+
+            return forestMap;
         }
 
         // Paste the region map into the world map starting at the offset coordinate
-        public int[,] PlaceRegion(int[,] map, int[,] regionMap, int offsetX, int offsetY)
+        public int[,] PlaceRegion(int[,] toMap, int[,] fromMap, int offsetX, int offsetY)
         {
-            for (int x = 0; x <= regionMap.GetUpperBound(0); x++)
+            for (int x = 0; x <= fromMap.GetUpperBound(0); x++)
             {
-                for (int y = 0; y <= regionMap.GetUpperBound(1); y++)
+                for (int y = 0; y <= fromMap.GetUpperBound(1); y++)
                 {
                     int realX = x + offsetX;
                     int realY = y + offsetY;
 
-                    if (realX <= map.GetUpperBound(0) && realY <= map.GetUpperBound(1))
+                    if (realX <= toMap.GetUpperBound(0) && realY <= toMap.GetUpperBound(1))
                     {
-                        map[realX, realY] = regionMap[x, y];
+                        int tile = fromMap[x, y];
+                        if (toMap[realX, realY] == emptyTile && tile != emptyTile)
+                            toMap[realX, realY] = tile;
                     }
                 }
             }
 
-            return map;
+            return toMap;
         }
 
         public Stage GenerateWorld(int width, int height, string seed)
@@ -206,10 +230,19 @@ namespace AzureOcean
                 {
                     if (x == width - 1) { }
                     Vector coordinate = new Vector(x, y);
-                    if (map[x, y] == filledTile)
-                        stage.tiles[x, y] = new WaterTile() { coordinate = coordinate };
-                    else if (map[x, y] == emptyTile)
-                        stage.tiles[x, y] = new GrassTile() { coordinate = coordinate };
+                    int tile = map[x, y];
+                    Tile tileObj;
+
+                    if (tile == emptyTile)
+                        tileObj = new GrassTile() { coordinate = coordinate };
+                    else if (tile == filledTile)
+                        tileObj = new TreeTile() { coordinate = coordinate };
+                    else if (tile == 2)
+                        tileObj = new WaterTile() { coordinate = coordinate };
+                    else
+                        tileObj = new StoneTile() { coordinate = coordinate };
+
+                    stage.tiles[x, y] = tileObj;
                 }
             }
 
