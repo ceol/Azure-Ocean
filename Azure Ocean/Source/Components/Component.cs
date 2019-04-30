@@ -192,9 +192,11 @@ namespace AzureOcean.Components
     }
 
     // Can be affected by elemental calculations
-    public enum ElementType { Fire, Water, Air }
+    public enum ElementType { None, Fire, Water, Air }
     public class Element : Component
     {
         public ElementType type;
     }
+
+    
 }

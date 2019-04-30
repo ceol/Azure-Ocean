@@ -143,7 +143,7 @@ namespace AzureOcean
 
                     // The Y axis is flipped when drawing sprites.
                     int xCoord = x + stageXOffset;
-                    int yCoord = (stage.height - y - 1) + stageYOffset;
+                    int yCoord = (stage.height - y) + stageYOffset;
                     spriteBatch.Draw(tileTexture, new Rectangle(xCoord * tileWidthPx, yCoord * tileHeightPx, tileWidthPx, tileHeightPx), Color.White);
                 }
             }

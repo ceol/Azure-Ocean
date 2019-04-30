@@ -45,7 +45,10 @@
     <Compile Include="AzureOcean.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Source\Actions\Action.cs" />
+    <Compile Include="Source\Actions\GameAction.cs" />
+    <Compile Include="Source\Actions\Combat.cs" />
+    <Compile Include="Source\Actions\Effect.cs" />
+    <Compile Include="Source\Actions\Skill.cs" />
     <Compile Include="Source\AI\Pathfinding.cs" />
     <Compile Include="Source\Architect.cs" />
     <Compile Include="Source\PriorityQueue.cs" />
@@ -54,6 +57,7 @@
     <Compile Include="Source\GameState.cs" />
     <Compile Include="Source\GameEvent.cs" />
     <Compile Include="Source\Stage.cs" />
+    <Compile Include="Source\Systems\CombatSystem.cs" />
     <Compile Include="Source\Systems\GameSystem.cs" />
     <Compile Include="Source\Systems\HostileSystem.cs" />
     <Compile Include="Source\Vector.cs" />

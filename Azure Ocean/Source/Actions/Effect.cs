@@ -17,28 +17,4 @@ namespace AzureOcean.Actions
 
         public abstract void Apply(Entity target);
     }
-
-    public class Damage : Effect
-    {
-        public override void Apply(Entity target)
-        {
-            
-        }
-    }
-
-    public class Heal : Effect
-    {
-        public override void Apply(Entity target)
-        {
-            
-        }
-    }
-
-    public class Status : Effect
-    {
-        public override void Apply(Entity target)
-        {
-            
-        }
-    }
 }
