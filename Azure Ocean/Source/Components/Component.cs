@@ -167,4 +167,34 @@ namespace AzureOcean.Components
             this.content = content;
         }
     }
+
+    // Can be manipulated by the inventory
+    public class Item : Component
+    {
+        public int value = 0;
+    }
+
+    // Can be used by an actor a certain number of times
+    public class Consumable : Component
+    {
+        public int remaining;
+    }
+
+    // Can fill a slot on a character
+    public enum EquipableType { Weapon, Armor, Accessory }
+    public class Equipable : Component
+    {
+        public EquipableType type;
+
+        public int attack = 0;
+        public int defense = 0;
+        public int speed = 0;
+    }
+
+    // Can be affected by elemental calculations
+    public enum ElementType { Fire, Water, Air }
+    public class Element : Component
+    {
+        public ElementType type;
+    }
 }
