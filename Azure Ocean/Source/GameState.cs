@@ -15,10 +15,18 @@ namespace AzureOcean
         public WorldArchitect architect;
 
         public Stage world;
+        public Stage board;
         public Stage CurrentStage
         {
-            get { return world; }
+            get
+            {
+                if (board != null)
+                    return board;
+                return world;
+            }
         }
+
+        public bool inCombat = false;
 
         public List<Entity> entities = new List<Entity>();
         public List<GameSystem> systems = new List<GameSystem>();
