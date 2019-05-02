@@ -85,7 +85,8 @@ namespace AzureOcean
         public static Entity CreatePlayer(GameState game)
         {
             return CreateEntity("Player",
-                new Component[] {
+                new Component[]
+                {
                     new Player(),
                     new Transform(new Vector(30, 30)),
                     new Health(30),
@@ -98,12 +99,25 @@ namespace AzureOcean
         public static Entity CreateGoblin(GameState game)
         {
             return CreateEntity("Goblin",
-                new Component[] {
+                new Component[]
+                {
                     new Hostile(),
                     new Transform(new Vector(60, 40)),
                     new Health(30),
                     new Actor(game),
                     new Render("Images/elf"),
+                }
+            );
+        }
+
+        public static Entity CreateSword()
+        {
+            return CreateEntity("Adventurer's Sword",
+                new Component[]
+                {
+                    new Item(),
+                    new Equipment() { attack = 5 },
+                    new Weapon() { damage = DamageType.Slashing },
                 }
             );
         }

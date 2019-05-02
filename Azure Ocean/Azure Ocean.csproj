@@ -61,6 +61,7 @@
     <Compile Include="Source\Systems\GameSystem.cs" />
     <Compile Include="Source\Systems\HostileSystem.cs" />
     <Compile Include="Source\Vector.cs" />
+    <Compile Include="Source\Components\Item.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Framework">
