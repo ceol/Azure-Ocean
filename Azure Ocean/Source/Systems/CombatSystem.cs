@@ -9,7 +9,32 @@ using AzureOcean.Components;
 
 namespace AzureOcean.Systems
 {
-    public class CombatSystem : GameSystem
+    public class TurnBasedCombatSystem : GameSystem
+    {
+        List<Actor> friendlyParty = new List<Actor>();
+        List<Actor> opposingParty = new List<Actor>();
+        LinkedList<Actor> turnOrder = new LinkedList<Actor>();
+
+        struct Components
+        {
+            public Actor actor;
+        }
+
+        public override void Run()
+        {
+            if (!game.inCombat) return;
+
+            // 
+
+            if (opposingParty.Count == 0)
+            {
+                game.inCombat = false;
+                // process exp
+            }
+        }
+    }
+
+    public class RoguelikeCombatSystem : GameSystem
     {
         LinkedList<Actor> turnOrder = new LinkedList<Actor>();
 
@@ -22,6 +47,7 @@ namespace AzureOcean.Systems
         {
             if (!game.inCombat) return;
 
+            // Populate turn order
             if (turnOrder.Count == 0)
             {
                 foreach (Entity entity in game.GetEntities<Components>())
