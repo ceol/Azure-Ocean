@@ -7,10 +7,22 @@ using System.Reflection;
 
 namespace ECS
 {
+    public struct Entity<T>
+    {
+        public readonly int id;
+        public readonly T components;
+
+        public Entity(int id, T components)
+        {
+            this.id = id;
+            this.components = components;
+        }
+    }
+
     public class EntityManager
     {
         int entityIncrementor = 0;
-        Dictionary<Type, Dictionary<int, object>> componentsByTypeAndEntity;
+        Dictionary<Type, Dictionary<int, object>> componentsByTypeAndEntity = new Dictionary<Type, Dictionary<int, object>>();
 
         public int CreateEntity(object[] components)
         {
@@ -47,20 +59,22 @@ namespace ECS
             componentsByTypeAndEntity[component.GetType()].Remove(entityId);
         }
 
-        public T GetEntity<T>(int entityId)
+        public Entity<T> GetEntity<T>(int entityId)
         {
-            T entity = Activator.CreateInstance<T>();
+
+            object entityComponents = Activator.CreateInstance<T>();
 
             foreach (FieldInfo field in typeof(T).GetFields())
             {
                 Type componentType = field.FieldType;
 
                 if (!componentsByTypeAndEntity.ContainsKey(componentType) || !componentsByTypeAndEntity[componentType].ContainsKey(entityId))
-                    return default(T);
+                    return default(Entity<T>);
 
-                field.SetValue(entity, componentsByTypeAndEntity[componentType][entityId]);
+                field.SetValue(entityComponents, componentsByTypeAndEntity[componentType][entityId]);
             }
 
+            Entity<T> entity = new Entity<T>(entityId, (T)entityComponents);
             return entity;
         }
 
@@ -89,16 +103,20 @@ namespace ECS
             }
         }
 
-        public Dictionary<int, T> GetEntities<T>()
+        public List<Entity<T>> GetEntities<T>()
         {
-            Dictionary<int, T> entities = new Dictionary<int, T>();
+            List<Entity<T>> entities = new List<Entity<T>>();
 
             // Create array of component types
             FieldInfo[] componentFields = typeof(T).GetFields();
+
             Type[] types = new Type[componentFields.Length];
             for (int i = 0; i < componentFields.Length; i++)
                 types[i] = componentFields[i].FieldType;
             SelectionSortByCount(ref types);
+
+            if (!componentsByTypeAndEntity.ContainsKey(types[0]))
+                return entities;
 
             // Check each component list by its type
             // Total number of entities is the smallest component count.
@@ -118,18 +136,19 @@ namespace ECS
 
                 if (components.Count == types.Length)
                 {
-                    T entity = Activator.CreateInstance<T>();
+                    object entityComponents = Activator.CreateInstance<T>();
                     foreach (object component in components)
                     {
                         foreach (FieldInfo componentField in componentFields)
                         {
                             if (component.GetType() == componentField.FieldType)
                             {
-                                componentField.SetValue(entity, component);
+                                componentField.SetValue(entityComponents, component);
                                 break;
                             }
                         }
                     }
+                    entities.Add(new Entity<T>(entityId, (T)entityComponents));
                 }
             }
 
