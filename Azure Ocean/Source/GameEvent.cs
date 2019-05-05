@@ -8,7 +8,6 @@ namespace AzureOcean
 {
     public class GameEvent
     {
-        public Entity sender;
         public string id;
         public Dictionary<string, object> data;
     }

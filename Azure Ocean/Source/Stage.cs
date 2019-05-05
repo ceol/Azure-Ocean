@@ -46,8 +46,6 @@ namespace AzureOcean
 
         public Tile[,] tiles;
 
-        Dictionary<Entity, Vector> entityPositions = new Dictionary<Entity, Vector>();
-
         public Stage(int width, int height)
         {
             this.width = width;
@@ -76,35 +74,6 @@ namespace AzureOcean
         public bool IsValid(int x, int y)
         {
             return x >= 0 && x <= tiles.GetUpperBound(0) && y >= 0 && y <= tiles.GetUpperBound(1);
-        }
-
-        public void MoveTo(Entity entity, Vector position)
-        {
-            entityPositions[entity] = position;
-        }
-
-        public Entity GetOccupant(Vector coordinate)
-        {
-            foreach (KeyValuePair<Entity, Vector> pair in entityPositions)
-            {
-                if (pair.Value == coordinate)
-                    return pair.Key;
-            }
-            return null;
-        }
-
-        public void SetOccupant(Entity entity)
-        {
-            Components.Transform transform = entity.GetComponent<Components.Transform>();
-            if (transform != null)
-            {
-                MoveTo(entity, transform.position);
-            }
-        }
-
-        public void RemoveEntity(Entity entity)
-        {
-            entityPositions.Remove(entity);
         }
 
         public List<Vector> GetAdjacentTraversableVectors(Vector coordinate)

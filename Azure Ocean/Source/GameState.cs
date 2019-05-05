@@ -6,6 +6,10 @@ using System.Text;
 using System.Threading.Tasks;
 using Debug = System.Diagnostics.Debug;
 
+using ECS;
+using AzureOcean.Systems;
+using AzureOcean.Components;
+
 namespace AzureOcean
 {
     public class GameState
@@ -28,8 +32,8 @@ namespace AzureOcean
 
         public bool inCombat = false;
 
-        public List<Entity> entities = new List<Entity>();
-        public List<GameSystem> systems = new List<GameSystem>();
+        public EntityManager entityManager = new EntityManager();
+        public List<ECS.System> systems = new List<ECS.System>();
 
         public GameState()
         {
@@ -46,40 +50,26 @@ namespace AzureOcean
             // Load systems
             // The order here matters, as this is the order they
             // will run their operations.
+            AttachSystem(new MovementSystem());
             AttachSystem(new PlayerInputSystem());
-            AttachSystem(new HostileSystem());
-            AttachSystem(new TurnSystem());
-            AttachSystem(new PhysicsSystem());
-            AttachSystem(new RenderSystem());
 
             // Load the stage
             architect = new WorldArchitect();
             GenerateWorld();
 
-            // Load the player
-            AttachEntity(EntityFactory.CreatePlayer(this));
-
-            // Load additional entities
-            AttachEntity(EntityFactory.CreateGoblin(this));
+            // Create entities
+            entityManager.CreateEntity(new object[]
+            {
+                new Player(),
+                new Transform(new Vector(30, 30)),
+                new Render("Images/elf"),
+            });
         }
 
-        public void AttachSystem(GameSystem system)
+        public void AttachSystem(ECS.System system)
         {
-            system.Bind(this);
+            system.Bind(entityManager);
             systems.Add(system);
-        }
-
-        public void AttachEntity(Entity entity)
-        {
-            if (CurrentStage != null)
-                CurrentStage.SetOccupant(entity);
-            entities.Add(entity);
-        }
-
-        public void DestroyEntity(Entity entity)
-        {
-            entities.Remove(entity);
-            CurrentStage.RemoveEntity(entity);
         }
 
         public string GetNewSeed()
@@ -98,44 +88,10 @@ namespace AzureOcean
             GenerateWorld();
         }
 
-        public List<Entity> GetEntities_(Type[] componentTypes)
-        {
-            List<Entity> filteredEntities = new List<Entity>();
-            foreach (Entity entity in entities)
-            {
-                if (entity.HasComponents(componentTypes))
-                    filteredEntities.Add(entity);
-            }
-
-            return filteredEntities;
-        }
-
-        public List<Entity> GetEntities<T>()
-        {
-            Type[] types = GetTypesFromFields(typeof(T).GetFields());
-            List<Entity> filteredEntities = new List<Entity>();
-            foreach (Entity entity in entities)
-            {
-                if (entity.HasComponents(types))
-                    filteredEntities.Add(entity);
-            }
-            return filteredEntities;
-        }
-
-        public Type[] GetTypesFromFields(FieldInfo[] fields)
-        {
-            Type[] types = new Type[fields.Length];
-            for (int i = 0; i < types.Length; i++)
-            {
-                types[i] = fields[i].FieldType;
-            }
-            return types;
-        }
-
         public void Update()
         {
             // loop through all non-render systems?
-            foreach (GameSystem system in systems)
+            foreach (ECS.System system in systems)
             {
                 system.Run();
             }

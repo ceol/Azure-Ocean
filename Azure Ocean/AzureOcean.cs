@@ -157,10 +157,10 @@ namespace AzureOcean
 
         protected void DrawEntities(SpriteBatch spriteBatch)
         {
-            foreach (Entity entity in game.GetEntities<DrawComponents>())
+            foreach (ECS.Entity<DrawComponents> entity in game.entityManager.GetEntities<DrawComponents>())
             {
-                Components.Transform transform = entity.GetComponent<Components.Transform>();
-                Components.Render render = entity.GetComponent<Components.Render>();
+                Components.Transform transform = entity.components.transform;
+                Components.Render render = entity.components.render;
 
                 int xCoord = transform.position.x + stageXOffset;
                 int yCoord = (game.CurrentStage.height - transform.position.y) + stageYOffset;
