@@ -50,8 +50,9 @@ namespace AzureOcean
             // Load systems
             // The order here matters, as this is the order they
             // will run their operations.
-            AttachSystem(new MovementSystem());
             AttachSystem(new PlayerInputSystem());
+            AttachSystem(new HostileMovementSystem());
+            AttachSystem(new MovementSystem());
 
             // Load the stage
             architect = new WorldArchitect();
@@ -62,6 +63,13 @@ namespace AzureOcean
             {
                 new Player(),
                 new Transform(new Vector(30, 30)),
+                new Render("Images/elf"),
+            });
+
+            entityManager.CreateEntity(new object[]
+            {
+                new Hostile("Goblin"),
+                new Transform(new Vector(50, 50)),
                 new Render("Images/elf"),
             });
         }

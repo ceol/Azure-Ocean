@@ -3,13 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Xna.Framework;
-using Debug = System.Diagnostics.Debug;
 
 namespace AzureOcean.Components
 {
-    public class Component
+    public class Render : Component
     {
-        
+        public string content;
+
+        public Render(string content)
+        {
+            this.content = content;
+        }
     }
 }

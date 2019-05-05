@@ -43,6 +43,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="AzureOcean.cs" />
+    <Compile Include="Source\Components\Actor.cs" />
+    <Compile Include="Source\Components\Health.cs" />
+    <Compile Include="Source\Components\Hostile.cs" />
+    <Compile Include="Source\Components\Player.cs" />
+    <Compile Include="Source\Components\Render.cs" />
     <Compile Include="Source\Components\Transform.cs" />
     <Compile Include="Source\ECS\ECS.cs" />
     <Compile Include="Program.cs" />
@@ -54,6 +59,7 @@
     <Compile Include="Source\GameState.cs" />
     <Compile Include="Source\GameEvent.cs" />
     <Compile Include="Source\Stage.cs" />
+    <Compile Include="Source\Systems\HostileMovementSystem.cs" />
     <Compile Include="Source\Systems\MovementSystem.cs" />
     <Compile Include="Source\Systems\PlayerInputSystem.cs" />
     <Compile Include="Source\Vector.cs" />
