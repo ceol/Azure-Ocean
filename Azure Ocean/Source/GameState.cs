@@ -51,7 +51,7 @@ namespace AzureOcean
             // The order here matters, as this is the order they
             // will run their operations.
             AttachSystem(new PlayerInputSystem());
-            AttachSystem(new HostileMovementSystem());
+            AttachSystem(new HostileTrackingSystem());
             AttachSystem(new MovementSystem());
 
             // Load the stage

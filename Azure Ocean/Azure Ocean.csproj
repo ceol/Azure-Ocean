@@ -59,7 +59,7 @@
     <Compile Include="Source\GameState.cs" />
     <Compile Include="Source\GameEvent.cs" />
     <Compile Include="Source\Stage.cs" />
-    <Compile Include="Source\Systems\HostileMovementSystem.cs" />
+    <Compile Include="Source\Systems\HostileTrackingSystem.cs" />
     <Compile Include="Source\Systems\MovementSystem.cs" />
     <Compile Include="Source\Systems\PlayerInputSystem.cs" />
     <Compile Include="Source\Vector.cs" />

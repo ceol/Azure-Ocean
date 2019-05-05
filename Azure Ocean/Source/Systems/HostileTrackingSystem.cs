@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Random = System.Random;
 
 using ECS;
 using AzureOcean.Components;
@@ -24,29 +25,39 @@ namespace AzureOcean.Systems
         }
 
         float movementThreshold = 1f;
-        int framesUntilMove = 60;
+        int framesUntilMove = 100;
+
+        Random random = new Random();
 
         public override void Run()
         {
             List<Entity<Components>> entities = entityManager.GetEntities<Components>();
             foreach (Entity<Components> entity in entities)
             {
-                // Skip if no nearby targets
-                List<Entity<TargetComponents>> targets = entityManager.GetEntities<TargetComponents>();
-                if (targets.Count == 0)
+                if (!HasTargets(entity))
                     continue;
-
-                Entity<TargetComponents> target = targets.First();
+                Entity<TargetComponents> target = GetClosestTarget();
 
                 Hostile hostile = entity.components.hostile;
                 hostile.waited += movementThreshold / framesUntilMove;
 
                 if (hostile.waited >= movementThreshold)
                 {
-                    //entity.components.transform.velocity = Vector.up;
+                    entity.components.transform.velocity = Vector.cardinals[random.Next(4)];
                     hostile.waited = 0f;
                 }
             }
+        }
+
+        bool HasTargets(Entity<Components> entity)
+        {
+            return true;
+        }
+
+        Entity<TargetComponents> GetClosestTarget()
+        {
+            List<Entity<TargetComponents>> targets = entityManager.GetEntities<TargetComponents>();
+            return targets.First();
         }
     }
 }
