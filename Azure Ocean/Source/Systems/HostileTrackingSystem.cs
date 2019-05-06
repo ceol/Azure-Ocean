@@ -36,7 +36,7 @@ namespace AzureOcean.Systems
             {
                 if (!HasTargets(entity))
                     continue;
-                Entity<TargetComponents> target = GetClosestTarget();
+                Entity<TargetComponents> target = GetClosestTarget(entity);
 
                 Hostile hostile = entity.components.hostile;
                 hostile.waited += movementThreshold / framesUntilMove;
@@ -54,7 +54,7 @@ namespace AzureOcean.Systems
             return true;
         }
 
-        Entity<TargetComponents> GetClosestTarget()
+        Entity<TargetComponents> GetClosestTarget(Entity<Components> entity)
         {
             List<Entity<TargetComponents>> targets = entityManager.GetEntities<TargetComponents>();
             return targets.First();

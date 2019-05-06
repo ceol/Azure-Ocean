@@ -5,7 +5,10 @@ namespace AzureOcean.Components
     // Can be manipulated by the inventory
     public class Item : Component
     {
+        public string name;
+        public string description;
         public int value = 0;
+        public int amount = 1;
     }
 
     // Can be used by an actor a certain number of times

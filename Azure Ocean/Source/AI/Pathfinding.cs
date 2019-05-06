@@ -8,7 +8,7 @@ using Debug = System.Diagnostics.Debug;
 
 namespace AzureOcean
 {
-    public class HostilePathfinder
+    public class AStarPathfinder
     {
         class Node : IComparable<Node>
         {
@@ -46,7 +46,7 @@ namespace AzureOcean
 
         int currentDistance;
 
-        public HostilePathfinder(Stage stage)
+        public AStarPathfinder(Stage stage)
         {
             this.stage = stage;
         }
@@ -137,6 +137,9 @@ namespace AzureOcean
             queue.Enqueue(updatedNode);
         }
 
+        // Heuristic can be anything that signifies the tile's "cost" to get
+        // to the destination relative to the others. For this, we just use
+        // the magnitude squared.
         public int CalculateHeuristic(Vector coordinate, Vector destination)
         {
             return (int)(Math.Pow(Math.Abs(destination.x - coordinate.x), 2) + Math.Pow(Math.Abs(destination.y - coordinate.y), 2));
